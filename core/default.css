@@ -1,0 +1,144 @@
+/*EDITOR STYLES*/
+
+.wikieditor {
+
+}
+
+.wikieditor-wrapper{
+border-radius:5px;
+border: 1px solid gray;
+}
+
+.wikieditor-body{
+padding: 12px;
+overflow: auto;
+resize: vertical;
+}
+
+.wikieditor-toolbar{
+	background-color:#DDD;
+	border-bottom:1px solid gray;
+	padding:2px;
+}
+
+/*MARKUP STYLES*/
+
+dd {
+padding-left:30px;
+}
+
+dt {
+margin-top:10px;
+}
+
+
+/*PAGE STYLES*/
+
+.editMenu {
+margin-bottom:4px;
+}
+
+.pagetitle {
+font-size:50px;
+font-weight:bold;
+}
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: 80vh;
+}
+
+.sidebar {
+max-height:100vh;
+direction:rtl;
+padding-left:15px;
+overflow-y:auto;
+overflow-x:hidden;
+}
+
+.expandSidebar {
+position:fixed;
+top:0;
+left:0;
+}
+
+.expandButton {
+color:gray;
+background-color:rgba(0,0,0,0);
+border:none;
+}
+
+.expandButton:hover {
+color:black;
+background-color:rgba(0,0,0,0);
+border:none;
+}
+
+.wideBody {
+width:95%;
+margin-left:5%;
+padding:5px;
+}
+
+input.headerInput {
+background-color: white;
+	box-shadow: 0px 0px 20px #DDD inset;
+	border:1px solid #AAA;
+	padding:5px;
+}
+
+#bodyWrapper {
+overflow-y:auto;
+max-height:100vh;
+}
+
+body {
+max-height:100vh;
+overflow:hidden;
+}
+
+.isResizable {
+  overflow: hidden;
+  resize: both;
+  border: 1px solid black;
+  /*
+  width: 160px;
+  height: 120px;
+  min-width: 120px;
+  min-height: 90px;
+  max-width: 400px;
+  max-height: 300px;
+  */
+}
+
+
+/* POPDOWN STYLES */
+
+@keyframes popdownAction {
+	0% {right:-200px;}
+    20%  {right:0px;}
+	80%  {right:0px;}
+    100% {right:-200px;}	
+}
+
+.popdown-animation {
+	top:0;
+	right:-200px;	
+	animation-name:popdownAction;
+	animation-duration:4s;	
+}
+
+
+.popdown {
+	color:black;
+	border:1px solid gray;
+	border-radius:2px;
+	box-shadow:5px 5px 2px black;
+	background-color:white;
+	height:30px;
+	position:fixed;
+	padding:5px 10px;
+	margin:5px 10px;
+	top:0;
+	right:-200px;
+}

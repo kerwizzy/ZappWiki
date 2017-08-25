@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf8'>
+
+<title>&nbsp;</title> <!-- Would have had TITLE here -->
+
+<style>
+body {
+/* Set it this way so there isn't as much of a "flash" as the page loads. This should be different for different themes.*/
+background-color:#333;
+}
+</style>
+
+<meta http-equiv="Cache-control" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<script src='/src/core/wikiengine.js'></script>
+<script src='/src/core/wikiloader.js'></script>
+<script src='/src/core/wikieditor.js'></script>
+
+
+<script src='/src/bootstrap/jquery-2.2.4.min.js'></script>
+<link rel="stylesheet" href="/src/bootstrap/bootstrap.min.css"></link>
+<script src='/src/bootstrap/bootstrap.min.js'></script>
+<link rel='stylesheet' href='/src/fonts/font-awesome-4.7.0/css/font-awesome.min.css'></link>
+<link rel="stylesheet" type="text/css" href="/src/treeview/_styles.css" media="screen">
+<link rel="stylesheet" type="text/css" href="/src/core/default.css">
+
+
+
+<style id='mainStyle'>
+
+
+</style>
+
+<style id='styleSheet'></style> <!--  this allows apps to set styles -->
+
+</head>
+<body>
+<span class='popdown' id='popdown'></span>
+
+<div class='container-fluid'>
+<div class='row'>
+<div id='expandSidebar' class='expandSidebar' style='display:none'>
+<button onclick='Wiki.expandSidebar()' class='btn btn-default expandButton'><span class='fa fa-fw fa-chevron-right'></span></button>
+<div id='editMenu_expandSidebar'>
+<button id='editbutton_expandSidebar' onclick='Wiki.toggleEdit()' class='btn btn-default expandButton'><span id='editbuttonicon_expand' class='fa fa-fw fa-pencil'></span></button>
+<BR>
+<button id='cancelButton_expandSidebar' onclick='Wiki.cancelEdit()' class='btn btn-default expandButton' style='display:none'><span class='fa fa-fw fa-remove'></span></button>
+</div>
+</div>
+
+<div id='sidebar' class='col-md-4 sidebar' style='color:white'>
+	<div style='direction:ltr;margin-top:15px;'>
+		<div id='editMenu' class='editMenu'> <!--This would have been EDITMENUSTYLE-->
+		<button id='editbutton' onclick='Wiki.toggleEdit()' class='btn btn-primary btn-lg'><span id='editbuttonicon' class='fa fa-fw fa-pencil'></span></button>
+		<button id='cancelButton' onclick='Wiki.cancelEdit()' class='btn btn-primary btn-lg' style='display:none'><span class='fa fa-fw fa-remove'></span></button>
+		<button id='settingsButton' class='btn btn-primary btn-lg' style='display:none' data-toggle="modal" data-target="#settingsModal"><span class='fa fa-fw fa-cog'></span></button>
+		</div>
+		<div id='fileMenu' class='editMenu'>
+		<button onclick='Wiki.newFile()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-plus'></span></button>
+		<button onclick='Wiki.newJournalFile()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-calendar'></span></button>
+		</div>
+		<div id='fileMenu2' class='editMenu'>
+		<button onclick='Wiki.newDirectory()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-folder-open'></span></button>
+		<button onclick='Wiki.copyCurrent()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-copy'></span></button>
+		<button id='deleteButton' onclick='Wiki.deleteCurrent()' style='display:none' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-trash'></span></button>
+		</div>
+		<div id='collapseMenu' class='editMenu'>
+		<button onclick='Wiki.collapseSidebar()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-chevron-left'></span></button>
+		</div>
+		<div style='margin-top:50px;' id='treeDiv'>
+		<!--FSTREE-->
+		</div>
+	</div>
+</div>
+<div class='col-md-5' id='bodyWrapper'>
+<div class='text-muted'>
+<div style='float:right' id='typeDiv'><!--TYPE--></div>
+<div style='float:left' id='pathDiv'></div>
+<div style='display:table;margin-left:auto;margin-right:auto;' id='dateSpan'></div>
+</div>
+<hr>
+<div id='body'>
+</div>
+
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+
+
+
+</div>
+
+
+</div>
+
+<div class="modal fade" id='settingsModal' tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" onclick='Wiki.cancelEdit();' aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Page Settings</h3>
+      </div>
+      <div class="modal-body">
+		Include Path:<input type=text id='includePathEdit' style='width:100%'></input>
+		<BR><input type=checkbox id='lockFileBox'>Lock file </input>
+		<BR>Path:<input id='settingsFilePath' style='font-weight:bold;width:100%'></input>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick='Wiki.cancelEdit();'>Cancel</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<script>
+Wiki.loader.load();
+</script>
+</body>
+</html>
