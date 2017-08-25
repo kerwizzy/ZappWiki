@@ -19,6 +19,8 @@ var fs = {
 	}	
 }
 
+const FS_WRAPPER = "wrappers/standard/fs.js"
+const FILE_WRAPPER = "wrappers/standard/file.js"
 
 
 
@@ -211,6 +213,8 @@ var server = https.createServer(httpsData,function(req,res){
 				var bootstrapPath = "/src/bootstrap/"
 				var treeviewPath = "/src/treeview/"
 				var fontsPath = "/src/fonts/"
+				var fsWrapperPath = "/src/wrappers/fs.js"
+				var fileWrapperPath = "/src/wrappers/file.js"
 				var srcPath = "/src/"
 				
 				if (parsed.pathname == "/system/user/preload.js") {
@@ -230,7 +234,11 @@ var server = https.createServer(httpsData,function(req,res){
 						path = parsed.pathname.replace(treeviewPath,"assets/treeview/");
 					} else if (parsed.pathname.startsWith(fontsPath)) {
 						path = parsed.pathname.replace(fontsPath,"assets/fonts/");
-					} else { //This shouldn't be necessary, but it seems like a good idea, in case someone later creates a /src/ directory
+					} else if (parsed.pathname == fsWrapperPath) {
+						path = FS_WRAPPER
+					} else if (parsed.pathname == fileWrapperPath) {
+						path = FILE_WRAPPER
+					} else {
 						res.statusCode = 404;
 						res.statusMessage = 'Not found'
 						res.end("<head><title>WikiServer: 404</title></head><body><h1>404 Not Found</h1></body>")
@@ -593,6 +601,11 @@ async function respond(arr,authtoken) {
 						resolve(JSON.stringify(data))
 					}
 				})
+			})
+		} else if (cmd == "GETWRAPPERCONFIG") {
+			return JSON.stringify({
+				fs:"standard"
+				,file:"standard"
 			})
 		}
 	} catch (err) {

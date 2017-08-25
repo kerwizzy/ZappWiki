@@ -1,9 +1,8 @@
 Wiki.loader = {
 load:function() {
-	var currentPath = location.pathname.substr(1) //Remove the initial '/'
-	Wiki.loader.readNode(currentPath,true)
-	.then(Wiki.loader.parseWikiNode)
-	//.then(Wiki.loader.replaceDOM)
+	var currentPath = location.pathname.substr(1) //Remove the initial '/'	
+	Wiki.file.read(currentPath,true)
+	.then(Wiki.loader.parseWikiNode)	
 }
 ,reload:function() {
 	location.reload();
@@ -12,8 +11,6 @@ load:function() {
 	document.open("text/html", "replace")
 	document.write(html);
 	document.close();
-
-
 }
 ,typeMapper:{
 	"zappwiki":"Zapp Wiki Page"
@@ -241,99 +238,6 @@ load:function() {
 	}
 	return includeList
 }
-//Old parser function that generated a whole new page.
-,oldParseWikiNode:async function(obj) {
-	var fs = Wiki.fs
-	/*
-	REQUIRED FIELDS
-	
-	text
-	type
-	path
-	
-	TODO: REFACTOR SO JUST REPLACES PAGE?
-	
-	Also, make save just replace the page instead of reloading
-	*/
-
-	var out = await Wiki.fs.readFileAsync("system/core/template.html","utf8")
-	
-	if (obj.title) {
-		out = Wiki.loader.replace(out,"<!--TITLE-->",obj.title)
-	} else {
-		out = Wiki.loader.replace(out,"<!--TITLE-->","Wiki/"+obj.path)
-	}
-	//out = Wiki.loader.replace(out,"<!--BODY-->",obj.text)
-	out = Wiki.loader.replace(out,"<!--TYPE-->",Wiki.loader.typeMapper[obj.type.toLowerCase()])
-	
-	var tree = new Wiki.loader.AST(JSON.parse(await Wiki.sendRawAsync("TREE")));//await Wiki.loader.genFsTree(Wiki.loader.treeBasePath)
-	var htmlTree = Wiki.loader.genHtmlTree(tree,obj.path)
-	
-	
-	out = Wiki.loader.replace(out,"<!--FSTREE-->",htmlTree)
-	
-	if (obj.type == "systemerror") {
-		out = Wiki.loader.replace(out,'<!--EDITMENUSTYLE-->',"style='display:none'") 
-	} else {
-		out = Wiki.loader.replace(out,'<!--EDITMENUSTYLE-->',"")
-	}
-	
-	//out = Wiki.loader.replace(out,"/*WIKINODE*/","var node = "+JSON.stringify(obj))
-	
-	if (!obj.include) {
-		obj.include = ""
-	}
-	
-	if (!obj.preload) {
-		obj.preload = ""
-	}
-	
-	if (!obj.script) {
-		obj.script = ""
-	}	
-	
-	var standardPreload = await fs.readFileAsync("system/config/preload.js")
-	obj.preload = standardPreload+"\n"+obj.preload
-
-	if (obj.preload != "\n") {
-		out = Wiki.loader.replace(out,"/*PRELOAD*/",obj.preload)
-	}
-	
-	
-	var standardScript = await fs.readFileAsync("system/config/script.js")
-	obj.script = standardScript+"\n"+obj.script
-	if (obj.script != "\n") {
-		out = Wiki.loader.replace(out,"/*SCRIPTS*/",obj.script)
-	}
-	
-	var standardInclude = await fs.readFileAsync("system/config/include.txt")
-	obj.include = standardInclude+"\n"+obj.include
-	
-	if (obj.include != "\n") {
-		var include = obj.include.split("\n")
-		var includeHTML = ""
-		for (var i = 0; i<include.length; i++) {
-			var path = include[i]
-			if (path.substr(0,1) == "<") { //This allows people to include stuff with integrity tags, etc.
-				includeHTML += path
-			} else {
-				var extensionStart = path.lastIndexOf(".")
-				if (extensionStart != -1) {
-					var extension = path.substr(extensionStart+1)
-					if (extension == "js") {
-						includeHTML += "\n<script src='"+path+"'></script>"
-					} else if (extension == "css") {
-						includeHTML += '\n<link rel="stylesheet" href="'+path+'">'
-					}
-				}
-			}
-		}
-		out = Wiki.loader.replace(out,'<!--INCLUDE-->',includeHTML)
-	}
-	return out
-	//console.log(out)
-}
-
 ,replace:function(template,field,value) { //Do this to avoid taking care of the escapes in String.replace()
 	var fieldStart = template.indexOf(field)
 	var fieldEnd = fieldStart+field.length
@@ -360,119 +264,6 @@ load:function() {
 ,getParentPath(path) {
 	var split = path.split("/")
 	return split.slice(0,split.length-1).join("/")	
-}
-,readNode:async function(wikiPath,getTimestamp) {
-	var fs = Wiki.fs
-	var obj = {}
-	
-	wikiPath = wikiPath.split("%20").join(" ")
-	
-	var lastSlashIndex = wikiPath.lastIndexOf("/")
-	var parentPath
-	if (lastSlashIndex == -1) {
-		parentPath = ""
-	} else {
-		parentPath = wikiPath.substr(0,lastSlashIndex+1) //get the slash
-	}
-	
-		
-
-	if (!(await fs.existsAsync(parentPath))) {
-		return Wiki.loader.systemerror("Not Found","The parent path of '"+wikiPath+"' was not found in this wiki.",wikiPath)
-	}
-	
-	
-	var pagename = wikiPath.substr(lastSlashIndex+1) //leave out the slash	
-	//remove the extension if there is one.
-	pagename = pagename.split(".")
-	if (pagename.length != 1) {
-		pagename.pop()
-	}
-	pagename = pagename.join(".")
-	
-	var dir = await fs.readdirAsync(parentPath)
-	var done = false
-	for (var i = 0; i<dir.length; i++) {
-		if (done) {
-			break;
-		}
-		
-		var fullfilename = dir[i]
-		
-		var fileExtensionStart = fullfilename.lastIndexOf(".")
-				
-		
-		if (fileExtensionStart != -1) { //Ignore directories and files with no extension
-			var fileExtension = fullfilename.substr(fileExtensionStart+1)	
-			var filename = fullfilename.substr(0,fileExtensionStart)
-			if (filename == pagename) {
-				if (!Wiki.loader.typeMapper[fileExtension.toLowerCase()]) {
-					return Wiki.loader.systemerror("Unaccepted File Type","."+fileExtension.toLowerCase()+" files are not currently supported.")
-				} else {
-					if (fileExtension == "zappwiki") {
-						var data = (await fs.readFileAsync(parentPath+fullfilename)).replace(/\n/g,"") 
-						obj = JSON.parse(data)				
-						done = true
-					} else {
-						var imageExtensions = [
-							"png"
-							,"jpg"
-							,"bmp"
-							,"jpeg"						
-						]
-						
-						if (imageExtensions.indexOf(fileExtension.toLowerCase()) != -1) {
-							obj.text = (wikiPath.substr(0,lastSlashIndex+1)+fullfilename)
-						} else {							
-							obj.text = (await fs.readFileAsync(parentPath+fullfilename,"utf8"))
-						}
-						
-						obj.title = filename+"."+fileExtension
-						
-						done = true
-					}
-					
-					obj.path = parentPath+fullfilename
-					obj.type = fileExtension
-					if (getTimestamp) {
-						obj.timestamp = (await fs.statAsync(parentPath+fullfilename)).mtime.getTime()
-					}
-					
-					if (obj.script) {
-						obj.postload = obj.script
-						delete obj.script
-					}
-					
-					if (Array.isArray(obj.text)) {
-						obj.text = obj.text.join("\n")
-						console.warn("Got ZWP v2 page");
-					} else if (!obj.format) {
-						console.warn("Got ZWP v1 page")
-					} else {
-						console.log("Got ZWP v3 page");
-					}
-					
-					if (Array.isArray(obj.postload)) {
-						obj.postload = obj.postload.join("\n")
-					}
-					
-					if (Array.isArray(obj.preload)) {
-						obj.preload = obj.preload.join("\n")
-					}
-					
-					if (Array.isArray(obj.include)) {
-						obj.include = obj.include.join("\n")
-					}
-				}
-			}
-		}
-	}
-	
-	if (!done) {
-		return Wiki.loader.systemerror("Not Found","The file '"+wikiPath+"' was not found in this wiki.",wikiPath)
-	} else {
-		return obj
-	}
 }
 ,systemerror:function(error,text,path) {
 	if (!path) {
@@ -700,9 +491,7 @@ load:function() {
 			}
 		}
 		return out	
-	}
-	
-	
+	}	
 	toHTML(indentLevel) {
 		var doPreWrapper =false
 		if (typeof indentLevel == "undefined") {

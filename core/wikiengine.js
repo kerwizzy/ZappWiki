@@ -68,7 +68,7 @@ var Wiki = {
 		}
 		,{
 			rule:function() {
-				Wiki.getUserData(function(user) {
+				Wiki.fs.getUserData(function(user) {
 					Wiki.user = user
 					Wiki.storage = Wiki.user.storage
 					if (Wiki.user.l > 20 && !Wiki.loginAlert) {
@@ -82,7 +82,7 @@ var Wiki = {
 		,{
 			rule:function() {
 				setInterval(function() {
-					Wiki.getUserData(function(user) {
+					Wiki.fs.getUserData(function(user) {
 						Wiki.user = user
 						if (Wiki.user.l > 20 && !Wiki.loginAlert) {
 							alert("Your session has expired. Reload the page to refresh the session.")
@@ -1034,7 +1034,7 @@ var Wiki = {
 		if (Wiki.editing) {
 			Wiki.runRuleList(Wiki.saveRules);
 			Wiki.showPopdown("Saved page.")
-			Wiki.command({cmd:"save",node:node})
+			Wiki.file.save(node)
 		}
 	}
 	,saveCurrent:function() {
@@ -1042,10 +1042,10 @@ var Wiki = {
 		
 		var newPath = document.getElementById("settingsFilePath").value
 		
-		Wiki.command({cmd:"save",node:node}).then(
+		Wiki.file.save(node).then(
 		function(data) {
 			if (newPath != node.path) {
-				Wiki.command({cmd:"move",oldPath:node.path,newPath:newPath}).then(function() {
+				Wiki.file.move(node.path,newPath).then(function() {
 					location.assign("/"+newPath)
 				})
 			} else {			
@@ -1193,7 +1193,7 @@ var Wiki = {
 				var newPath = node.path.split("/")
 				newPath[newPath.length-1] = name
 				newPath = newPath.join("/")
-				Wiki.command({cmd:"new",path:newPath}).then(
+				Wiki.file.newPage(newPath).then(
 				function(data) {
 					Wiki.loader.reload();
 				})
@@ -1222,7 +1222,7 @@ var Wiki = {
 			
 			newPath[newPath.length-1] = year+month+day
 			newPath = newPath.join("/")
-			Wiki.command({cmd:"newJournal",path:newPath}).then(
+			Wiki.file.newJournal(newPath).then(
 			function(data) {
 				Wiki.loader.reload();
 			})
@@ -1237,7 +1237,7 @@ var Wiki = {
 				var newPath = node.path.split("/")
 				newPath[newPath.length-1] = name
 				newPath = newPath.join("/")
-				Wiki.command({cmd:"mkdir",path:newPath}).then(
+				Wiki.file.mkdir(newPath).then(
 				function(data) {
 					Wiki.loader.reload();
 				})
@@ -1248,7 +1248,7 @@ var Wiki = {
 		if (Wiki.user.l >= 3) {
 			alert("You do not have permission to copy files.")
 		} else {
-			Wiki.command({cmd:"copy",node:node}).then(
+			Wiki.file.copy(node).then(
 			function(data) {
 				Wiki.loader.reload();
 			})
@@ -1258,7 +1258,7 @@ var Wiki = {
 		var ok = confirm("Delete this file? (This action cannot be undone)")
 		console.log(ok)
 		if (ok) {
-			Wiki.command({cmd:"delete",path:node.path}).then(
+			Wiki.file.remove(node.path).then(
 			function(data) {
 				location.assign(Wiki.serverURL+"home");
 			})
@@ -1275,92 +1275,6 @@ var Wiki = {
 		document.getElementById("expandSidebar").style.display = "none"
 	}
 	,serverURL:"/"
-	,command:async function(obj) {
-		var fs = Wiki.fs
-		if (obj.cmd == "save") {
-			console.log("Got save command: "+obj.node.path)
-			console.log("Type: "+obj.node.type)
-			if (obj.node.type == "zappwiki") {
-				var nodeCopy = JSON.parse(JSON.stringify(obj.node))
-				
-				/*
-				nodeCopy.text = nodeCopy.text.split("\n") //Save it this way so git diffs are useful
-				
-				
-				if (nodeCopy.preload) nodeCopy.preload = nodeCopy.preload.split("\n");
-				if (nodeCopy.postload) nodeCopy.postload = nodeCopy.postload.split("\n");
-				if (nodeCopy.include) nodeCopy.include = nodeCopy.include.split("\n");
-				*/
-				delete nodeCopy.path //Dont save the path			
-				
-				nodeCopy.format = "ZWP v3"
-				
-				var data = JSON.stringify(nodeCopy)
-				/*
-				data = data.replace(/\,/g,"\n,")
-				data = data.replace(/\{/g,"{\n")
-				data = data.replace(/\}/g,"\n}")
-				data = data.replace(/\[/g,"[\n")
-				data = data.replace(/\]/g,"\n]")
-				*/
-				await fs.writeFileAsync(obj.node.path,data)
-			} else {
-				await fs.writeFileAsync(obj.node.path,obj.node.text.join("\n"))
-			}
-		} else if (obj.cmd == "new") {
-			await Wiki.makeNewPage(obj.path)
-		} else if (obj.cmd == "newJournal") {
-			await Wiki.makeNewJournalPage(obj.path)
-		} else if (obj.cmd == "mkdir") {
-			if (!(await fs.existsAsync(obj.path))) {
-				console.log("Making directory: "+obj.path)
-				await fs.mkdirAsync(obj.path)
-				await Wiki.makeNewPage(obj.path+"/index") //Make a new page so there is something in the directory to start from.
-			}		
-		} else if (obj.cmd == "delete") {
-			if (await fs.existsAsync(obj.path)) {
-				await Wiki.deletePath(obj.path)
-			}
-		} else if (obj.cmd == "copy") {	
-			var path = obj.node.path
-			while (await fs.existsAsync(path)) {
-				path = path.split(".")
-				path[path.length-2] += " Copy"
-				path = path.join(".")
-			}
-			if (obj.node.type == "zappwiki") {
-				var data = JSON.stringify(obj.node)
-				await fs.writeFileAsync(path,data)
-			} else {
-				await fs.writeFileAsync(path,obj.node.text)
-			}
-		} else if (obj.cmd == "move") {
-			var oldType = Wiki.getType(obj.oldPath)
-			var newType = Wiki.getType(obj.newPath)
-			//TODO: have something check for overwrites
-			if (oldType != newType) {
-				if (newType == "zappwiki") { //old type must have been something else
-					var oldData = await fs.readFileAsync(obj.oldPath,"utf8")
-					var oldName = Wiki.getName(obj.oldPath)
-					var newPage = {
-						type:"zappwiki"
-						,title:oldName
-						//,path:obj.newPath
-						,text:oldData.split("\n") //See above for why this is line-saved
-					}
-					
-					await fs.writeFileAsync(obj.newPath,JSON.stringify(newPage))
-				} else { //going from zappwiki to something else
-					var oldData = await Wiki.loader.readNode(obj.oldPath,false)
-					var text = oldData.text
-					await fs.writeFileAsync(obj.newPath,text)
-				}
-				await fs.unlinkAsync(obj.oldPath) //Delete the old file.
-			} else {
-				await fs.renameAsync(obj.oldPath,obj.newPath)
-			}
-		}
-	}
 	,getType:function(path) {
 		var split = path.split(".")
 		return split[split.length-1]
@@ -1375,83 +1289,7 @@ var Wiki = {
 			return name.substr(0,extensionStart)
 		}
 	}
-	,deletePath:async function(path) {
-		//Note that path is a path inside the wiki
-		console.log("Deleting: "+path)
-		
-		var fs = Wiki.fs
-		
-		var actualPath = path
-		var stats = await fs.statAsync(actualPath)
-		if (stats.isDirectory()) {
-			await fs.rmdirAsync(actualPath)
-		} else {
-			await fs.unlinkAsync(actualPath)
-		}
-		
-		//console.log("typeof path: "+typeof path)
-		var parentPath = path.split("/");
-		parentPath.pop()
-		parentPath = parentPath.join("/")
-		var dir = await fs.readdirAsync(parentPath)
-		if (dir.length == 0) { //If there is nothing left in the directory...
-			deletePath(parentPath) //TODO: will calling this recursively possibly cause race conditions? (i.e., the parent dir gets deleted before stuff inside it finishes or something?)
-		}	
-	}
-	,makeNewPage:async function(path) {
-		var newPage = {
-			title:"New Wiki Page"
-			,text:""
-			//,path:path
-			,type:"zappwiki"		
-		}
-		
-		var fs = Wiki.fs
-		
-		if (!await fs.existsAsync(path)) { //don't overwrite
-			await fs.writeFileAsync(path+".zappwiki",JSON.stringify(newPage))	
-		}
-	}
-
-	,makeNewJournalPage:async function(path) {		
-		var date = new Date()
-		var day = date.getDate();
-		
-		var monthNum = date.getMonth();
-		var monthNames = [
-			"January"
-			,"February"
-			,"March"
-			,"April"
-			,"May"
-			,"June"
-			,"July"
-			,"August"
-			,"September"
-			,"October"
-			,"November"
-			,"December"
-		]
-		
-		var month = monthNames[monthNum]
-		
-		var year = date.getFullYear()
-		
-		
-		var title = month+" "+day+", "+year
-		var newPage = {
-			title:title
-			,text:""
-			//,path:path
-			,type:"zappwiki"		
-		}
-		
-		var fs = Wiki.fs
-		
-		if (!await fs.existsAsync(path)) { //don't overwrite
-			await fs.writeFileAsync(path+".zappwiki",JSON.stringify(newPage))	
-		}
-	}
+	
 	/*
 	,send:function(obj,callbackFunction) {
 		var serverURL = Wiki.serverURL
@@ -1509,151 +1347,12 @@ var Wiki = {
 		var out = arr.slice(0)	
 		return out.join("\n")
 	}
-	,logout:function() {
-		Wiki.sendRaw("LOGOUT",function() {
-			location.assign("/home")
-		})
-	}
-	,getUserData:function(callback) {
-		Wiki.sendRaw("USERDATA",function(res) {
-			callback(JSON.parse(res))
-		})		
-	}
-	,fsWrappers:{
-		standard:{ //Functions for a standard server with no additional authentication, signatures, etc.
-			writeFile:function(path,data,encoding,callback) { 
-				if (!encoding) {
-					encoding = "utf8"
-				}
-			
-				Wiki.sendArray(["WRITE",path,encoding,data],function(res) {
-					callback(undefined,res) //Undefined takes place of error
-				})
-			}
-			,readFile:function(path,encoding,callback) {
-				if (!encoding) {
-					encoding = "utf8"
-				}
-				
-				Wiki.sendArray(["READ",path,encoding],function(res) {
-					callback(undefined,res.replace(/\r\n/g,"\n"))
-				})
-			}
-			,stat:function(path,callback) {
-				Wiki.sendArray(["STAT",path],function(data) {
-					class FsStats {
-						constructor(statArray) {
-							var indexNames = [
-								"dev"
-								,"ino"
-								,"mode"
-								,"nlink"
-								,"uid"
-								,"gid"
-								,"rdev"
-								,"size"
-								,"blksize"
-								,"blocks"
-							]
-
-							for (var i = 0; i<indexNames.length; i++) {
-								this[indexNames[i]] = statArray[i]
-							}
-							
-							this.atime = new Date(parseInt(statArray[indexNames.length]))
-							this.mtime = new Date(parseInt(statArray[indexNames.length+1]))
-							this.ctime = new Date(parseInt(statArray[indexNames.length+2]))
-							this.birthtime = new Date(parseInt(statArray[indexNames.length+3]))
-							
-							this.isFileVal = statArray[indexNames.length+4] == "true"
-							this.isDirectoryVal = statArray[indexNames.length+5] == "true"
-						}
-						
-						isFile() {
-							return this.isFileVal
-						}
-						
-						isDirectory() {
-							return this.isDirectoryVal
-						}
-					}
-					
-					data = data.split(",")
-					var stat = new FsStats(data)
-					
-					callback(undefined,stat)
-				})
-			}
-			,readdir:function(path,callback) {
-				Wiki.sendArray(["READDIR",path],function(data) {
-					data = data.split(",")
-					callback(undefined,data)
-				})
-			}
-			,rename:function(oldpath,newpath,callback) {
-				Wiki.sendArray(["RENAME",oldpath,newpath],function(err) {
-					callback(err)
-				})
-			}
-			,mkdir:function(path,callback) {
-				Wiki.sendArray(["MKDIR",path],function(err) {
-					callback(err)
-				})
-			}
-			,rmdir:function(path,callback) {
-				Wiki.sendArray(["RMDIR",path],function(res) {
-					callback(undefined,res)
-				})
-			}
-			,unlink:function(path,callback) {
-				Wiki.sendArray(["UNLINK",path],function(res) {
-					callback(undefined,res)
-				})
-			}
-			,exists:function(path,callback) { //this is deprecated in node. have it here because it needs to be async anyway because of xhttp
-				Wiki.sendArray(["EXISTS",path],function(data) {
-					callback(data == "true")
-				})
-			}
-			,addRemote:function(name,path,callback) { //Note these synchronization commands require an auth level of 0 for adding remotes and 1 for syncing
-				Wiki.sendArray(["ADDREMOTE",name,path],function() {
-					callback();
-				})
-			}
-			,removeRemote:function(name,path,callback) {
-				Wiki.sendArray(["REMOVEREMOTE",name,path],function() {
-					callback();
-				})
-			}
-			,getRemotes:function(callback) {
-				Wiki.sendArray(["GETREMOTES"],function(data) {
-					callback(JSON.parse(data));
-				})
-			}
-			,sync:function(callback) {
-				Wiki.sendArray(["SYNC"],function(data) {
-					callback(data);
-				})
-			}
-			,saveStorage(callback) {
-				Wiki.sendArray(["SAVESTORAGE",JSON.stringify(Wiki.storage)],callback);
-			}
-			,setPreload(data,callback) {
-				Wiki.sendArray(["SETPRELOAD",data],callback);
-			}
-			,setPostload(data,callback) {
-				Wiki.sendArray(["SETPOSTLOAD",data],callback);
-			}
-		}		
-	}
-	,setFsWrapper:function(mode) {
-		Wiki.fsWrapper = Wiki.fsWrappers[mode]
-		
-		var keys = Object.keys(Wiki.fsWrapper);
+	,combineObjects(base,toAdd) {
+		var keys = Object.keys(toAdd)
 		for (var i = 0; i<keys.length; i++) {
 			var key = keys[i]
-			Wiki.fs[key]=Wiki.fsWrapper[key]		
-		}
+			base[key] = toAdd[key]
+		}		
 	}
 	,fs:{
 		//Note that these all return Promises, so they can be used with await.
@@ -1771,5 +1470,5 @@ var Wiki = {
 	}
 }
 
-Wiki.setFsWrapper("standard")
+
 
