@@ -93,43 +93,11 @@ Wiki.combineObjects(Wiki.fs,{ //Functions for a standard server with no addition
 			callback(data == "true")
 		})
 	}
-	,addRemote:function(name,path,callback) { //Note these synchronization commands require an auth level of 0 for adding remotes and 1 for syncing
-		Wiki.sendArray(["ADDREMOTE",name,path],function() {
-			callback();
-		})
-	}
-	,removeRemote:function(name,path,callback) {
-		Wiki.sendArray(["REMOVEREMOTE",name,path],function() {
-			callback();
-		})
-	}
-	,getRemotes:function(callback) {
-		Wiki.sendArray(["GETREMOTES"],function(data) {
-			callback(JSON.parse(data));
-		})
-	}
-	,sync:function(callback) {
-		Wiki.sendArray(["SYNC"],function(data) {
-			callback(data);
-		})
-	}
-	,saveStorage(callback) {
-		Wiki.sendArray(["SAVESTORAGE",JSON.stringify(Wiki.storage)],callback);
-	}
 	,setPreload(data,callback) {
 		Wiki.sendArray(["SETPRELOAD",data],callback);
 	}
 	,setPostload(data,callback) {
 		Wiki.sendArray(["SETPOSTLOAD",data],callback);
 	}
-	,logout:function() {
-		Wiki.sendRaw("LOGOUT",function() {
-			location.assign("/home")
-		})
-	}
-	,getUserData:function(callback) {
-		Wiki.sendRaw("USERDATA",function(res) {
-			callback(JSON.parse(res))
-		})		
-	}
+	
 })

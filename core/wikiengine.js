@@ -68,7 +68,7 @@ var Wiki = {
 		}
 		,{
 			rule:function() {
-				Wiki.fs.getUserData(function(user) {
+				Wiki.file.getUserData(function(user) {
 					Wiki.user = user
 					Wiki.storage = Wiki.user.storage
 					if (Wiki.user.l > 20 && !Wiki.loginAlert) {
@@ -82,7 +82,7 @@ var Wiki = {
 		,{
 			rule:function() {
 				setInterval(function() {
-					Wiki.fs.getUserData(function(user) {
+					Wiki.file.getUserData(function(user) {
 						Wiki.user = user
 						if (Wiki.user.l > 20 && !Wiki.loginAlert) {
 							alert("Your session has expired. Reload the page to refresh the session.")
@@ -1093,7 +1093,7 @@ var Wiki = {
 		}		
 	}
 	,saveStorage:function(callback) {
-		Wiki.fs.saveStorage(callback)		
+		Wiki.file.saveStorage(callback)		
 	}
 	,setPref(pref,val) {
 		Wiki.setStorage("PREFERENCES",pref,val);
