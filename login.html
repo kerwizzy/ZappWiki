@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html id='html'>
+<head>
+<title>Sign in to ZappWiki</title>
+<style>
+.loginWrapper {
+	position: absolute;
+	width: 300px;
+	z-index: 15;
+	top: 50%;
+	left: 50%;
+	margin: -200px 0 0 -150px;
+	background-color:#FFF;
+	border:1px solid #AAA;
+	padding:10px;
+	border-radius:10px;
+}
+
+body {
+background-color:#EEE;
+font-family:Arial;
+}
+
+.submitButton {
+	background-color:#009cff;
+	font-family:Arial;
+	border:none;
+	color:white;
+	font-weight:bold;
+	width:100px;
+	height:20px;
+	margin:auto;
+}
+
+.submitButton:hover {
+	background-color:#0082ff;
+}
+
+.error {
+color:red;
+}
+
+</style>
+
+</head>
+<body>
+<div class='loginWrapper'>
+<h1>Sign In to ZappWiki</h1>
+<form action='/home' method="post" accept-charset="UTF8">
+<!--ERROR-->
+<input type='text' name='zappwikiusername' placeholder="Username"></input> <!--Make it "zappwikiusername" to stop it from giving user names from other sites as suggestions.-->
+<BR>
+<BR>
+<input type='password' name='zappwikipassword' placeholder="Password"></input>
+<BR>
+<BR>
+<input type="submit" value="Sign In" class='submitButton'>
+</form>
+</div>
+</body>

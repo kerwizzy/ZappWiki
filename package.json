@@ -1,0 +1,20 @@
+{
+  "name": "zappwiki",
+  "version": "0.2.0",
+  "description": "A multi-user wiki engine",
+  "main": "fileserver.js",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookies": "^0.7.0",
+    "sjcl": "^1.0.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "wiki"
+  ],
+  "author": "kerwizzy",
+  "license": "MIT"
+}
