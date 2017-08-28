@@ -906,7 +906,10 @@ var Wiki = {
 				if (node.type == "zappwiki") {
 					Wiki.body.innerHTML += 
 					"<hr><div id='texteditwrapper'><textarea id='textedit' style='width:100%'></textarea></div><BR><BR>"
-					+"<h2>Include</h2><textarea style='width:100%' id='includeedit'></textarea><h2>Scripts</h2><h3>Preload</h3><div class='isResizable' id='preloadeditWrapper'><textarea style='width:100%' id='preloadedit'></textarea></div><h3>Postload</h3><textarea style='width:100%' id='postloadedit'></textarea>"
+					+"<h2>Include</h2><textarea style='width:100%' id='includeedit'></textarea>"
+					+"<h2>Scripts</h2>"
+					+"<h3>Preload</h3><div class='isResizable' id='preloadeditWrapper'><textarea style='width:100%' id='preloadedit'></textarea></div>"
+					+"<h3>Postload</h3><div class='isResizable' id='postloadeditWrapper'><textarea style='width:100%' id='postloadedit'></textarea></div>"
 				}
 			}
 		}
@@ -950,6 +953,11 @@ var Wiki = {
 						}
 						Wiki.codeMirrorPostloadEdit = CodeMirror.fromTextArea(document.getElementById('postloadedit'),config);
 						Wiki.codeMirrorPreloadEdit = CodeMirror.fromTextArea(document.getElementById('preloadedit'),config);
+						
+						//To this to stop the editors from continually expanding when the user resizes them.
+						document.getElementById('postloadeditWrapper').style.height = window.getComputedStyle(document.getElementById("postloadeditWrapper")).height
+						document.getElementById('preloadeditWrapper').style.height = window.getComputedStyle(document.getElementById("preloadeditWrapper")).height
+						
 						setInterval(Wiki.updateEditorSizes,200)
 					}
 				}				
@@ -1029,6 +1037,13 @@ var Wiki = {
 			Wiki.codeMirrorPreloadEdit.setSize(w,h)
 			Wiki.codeMirrorPreloadEdit.refresh()
 		}
+		
+		if (Wiki.codeMirrorPostloadEdit) {
+			var w = window.getComputedStyle(document.getElementById("postloadeditWrapper")).width
+			var h = window.getComputedStyle(document.getElementById("postloadeditWrapper")).height
+			Wiki.codeMirrorPostloadEdit.setSize(w,h)
+			Wiki.codeMirrorPostloadEdit.refresh()
+		}		
 	}
 	,saveNoReload() {
 		if (Wiki.editing) {
