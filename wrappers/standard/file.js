@@ -307,5 +307,8 @@ Wiki.file = {
 	,saveStorage(callback) {
 		Wiki.sendArray(["SAVESTORAGE",JSON.stringify(Wiki.storage)],callback);
 	}
+	,tree:async function() {
+		return await Wiki.sendRawAsync("TREE")
+	}
 }
 

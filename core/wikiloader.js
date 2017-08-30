@@ -52,7 +52,7 @@ load:function() {
 	Also, make save just replace the page instead of reloading
 	*/
 		
-	var tree = new Wiki.loader.AST(JSON.parse(await Wiki.sendRawAsync("TREE")));//await Wiki.loader.genFsTree(Wiki.loader.treeBasePath)
+	var tree = new Wiki.loader.AST(JSON.parse(await Wiki.file.tree()));//await Wiki.loader.genFsTree(Wiki.loader.treeBasePath)
 	var htmlTree = Wiki.loader.genHtmlTree(tree,obj.path)
 	
 	
