@@ -43,7 +43,11 @@ const util = require("util")
 
 var httpskey = fs.readFileSync('serverdata/https/key.pem');
 var httpscert = fs.readFileSync('serverdata/https/cert.pem')
-var httpspassphrase = fs.readFileSync("serverdata/https/passphrase.txt","utf8");
+if (fs.existsSync("serverdata/https/passphrase.txt")) {
+	var httpspassphrase = fs.readFileSync("serverdata/https/passphrase.txt","utf8");
+} else {
+	var httpspassphrase = ""
+}
 
 
 var authLifespan = 120*60*1000 //120 min
