@@ -1142,7 +1142,7 @@ var Wiki = {
 			name:"default_save_wysiwyg"
 			,rule:function() {
 				if (Wiki.wysiwyg) {
-					node.text = Wiki.wysiwygEditor.html
+					node.text = "@@"+Wiki.wysiwygEditor.html+"@@"
 				}
 			}			
 		}
