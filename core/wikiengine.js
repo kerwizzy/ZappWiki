@@ -310,6 +310,16 @@ var Wiki = {
 			document.getElementById("popdown").classList.add("popdown-animation")
 		},10)
 	}
+	,showModal(title,body,ok,close) {
+		document.getElementById("tempModal-title").innerHTML = title
+		document.getElementById("tempModal-body").innerHTML = body
+		if (close) {
+			document.getElementById("tempModal-close").onclick = close
+			document.getElementById("tempModal-closeTop").onclick = close
+		}
+		document.getElementById("tempModal-confirm").onclick = ok
+		$('#tempModal').modal(); 
+	}
 	,imageExtensions:[
 		"png"
 		,"jpg"
@@ -392,88 +402,87 @@ var Wiki = {
 			var foundSomething = false
 			if (markup.substr(i,2) == "@@") {
 				inRaw = !inRaw
-				i += 2
-				
-			}
-			if (!inRaw) {
-				for (var r = 0; r<Wiki.rules.length; r++) {
-					var rule = Wiki.rules[r]
-					var ruleAllowed = filter.indexOf(rule.name) != -1
-					ruleAllowed = ruleAllowed != invert //XOR invert and ruleAllowed
-					if (ruleAllowed) {
-						var start = rule.start
-						var parse = rule.parse
-						var end = rule.end || rule.start
-						
-						var startText = Wiki.testMatch(start,i,markup)
-						if (startText) {
-							if (inP && rule.closeParagraph) {
-								html+="</p>"
-								inP = false
-							}
+				i += 2				
+			} else {
+				if (!inRaw) {
+					for (var r = 0; r<Wiki.rules.length; r++) {
+						var rule = Wiki.rules[r]
+						var ruleAllowed = filter.indexOf(rule.name) != -1
+						ruleAllowed = ruleAllowed != invert //XOR invert and ruleAllowed
+						if (ruleAllowed) {
+							var start = rule.start
+							var parse = rule.parse
+							var end = rule.end || rule.start
 							
-							var endText
-							for (var j = i+startText.length; j<markup.length; j++) {
-								if (markup.substr(j,2) == "@@" && !(rule.allowRaw === false)) {
-									inRaw = !inRaw
-									j++
+							var startText = Wiki.testMatch(start,i,markup)
+							if (startText) {
+								if (inP && rule.closeParagraph) {
+									html+="</p>"
+									inP = false
 								}
-								if (!inRaw) {
-									endText = Wiki.testMatch(end,j,markup)
-									if (endText) {
-										break;
+								
+								var endText
+								for (var j = i+startText.length; j<markup.length; j++) {
+									if (markup.substr(j,2) == "@@" && !(rule.allowRaw === false)) {
+										inRaw = !inRaw
+										j++
+									}
+									if (!inRaw) {
+										endText = Wiki.testMatch(end,j,markup)
+										if (endText) {
+											break;
+										}
 									}
 								}
-							}
-							var substring = markup.substring(i+startText.length,j)
-							
-							
-							var parsed = rule.parse(substring,startText,endText)
-							
-							if (!rule.allowZeroWidthSpaces) {
-								parsed = parsed.replace(/&#8203;/g,'');
-								parsed = parsed.replace(/&#x200b;/g,'');
-								parsed = parsed.replace(/\uB200/g,''); //This allows zero width spaces to be used as an escape character. We have to do the replacement after it is parsed in order to let this happen.
-							}
-							if (typeof parsed == "undefined") {
-								debugger;
-							}
-							html += parsed
-							if (endText) {
-								if (rule.dontSkipEnd) {
-									i = j
-								} else {
-									i = j+endText.length //Or something else?
+								var substring = markup.substring(i+startText.length,j)
+								
+								
+								var parsed = rule.parse(substring,startText,endText)
+								
+								if (!rule.allowZeroWidthSpaces) {
+									parsed = parsed.replace(/&#8203;/g,'');
+									parsed = parsed.replace(/&#x200b;/g,'');
+									parsed = parsed.replace(/\uB200/g,''); //This allows zero width spaces to be used as an escape character. We have to do the replacement after it is parsed in order to let this happen.
 								}
-							} else {
-								i = j+1 //At end
+								if (typeof parsed == "undefined") {
+									debugger;
+								}
+								html += parsed
+								if (endText) {
+									if (rule.dontSkipEnd) {
+										i = j
+									} else {
+										i = j+endText.length //Or something else?
+									}
+								} else {
+									i = j+1 //At end
+								}
+								if (rule.postInsert) {
+									console.log("Post insert.")
+									var before = markup.substr(0,i)
+									var after = markup.substr(i)
+									markup = before+rule.postInsert+after
+									//Maybe have some way of returning the post insert if we are in a recursive thing?
+								}					
+								foundSomething = true
+								break;
 							}
-							if (rule.postInsert) {
-								console.log("Post insert.")
-								var before = markup.substr(0,i)
-								var after = markup.substr(i)
-								markup = before+rule.postInsert+after
-								//Maybe have some way of returning the post insert if we are in a recursive thing?
-							}					
-							foundSomething = true
-							break;
 						}
 					}
 				}
-			}
-			if (!foundSomething) {
-				if ((((i == 0 || lastFoundSomething) && !inP) || (markup[i] == "\n" && markup[i-1] == "\n")) && ((filter.indexOf("paragraph") != -1) != invert) && !inRaw) { //if paragraphs allowed
-					if (inP) {
-						html += "</p>"
+				if (!foundSomething) {
+					if ((((i == 0 || lastFoundSomething) && !inP) || (markup[i] == "\n" && markup[i-1] == "\n")) && ((filter.indexOf("paragraph") != -1) != invert) && !inRaw) { //if paragraphs allowed
+						if (inP) {
+							html += "</p>"
+						}
+						html += "<p>"
+						inP = true
 					}
-					html += "<p>"
-					inP = true
+					html += markup[i]
+					i++				
 				}
-				html += markup[i]
-				i++				
+				lastFoundSomething = foundSomething
 			}
-			lastFoundSomething = foundSomething
-			
 		}
 		if (inP) {
 			html += "</p>"

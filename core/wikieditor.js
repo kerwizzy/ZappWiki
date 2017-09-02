@@ -138,6 +138,9 @@ Wiki.editor = class {
 		
 		this.addFaButton(this.convertToHTML,"html","Convert Selection to HTML","random")
 		
+		this.addFaButton(this.selectionToLink,"insert","Insert Link","link");
+		this.addFaButton(this.insertImage,"insert","Insert Image","picture-o");
+		
 		this.addDropdownOption(this.h1,"Style","Heading 1")
 		this.addDropdownOption(this.h2,"Style","Heading 2")
 		this.addDropdownOption(this.h3,"Style","Heading 3")
@@ -288,6 +291,23 @@ Wiki.editor = class {
 	
 	clearFormatting() {
 		this.cmd("removeFormat")
+	}
+	
+	selectionToLink() {
+		this.cmd("createLink",prompt("Link Location"));
+	}
+	
+	insertImage() {
+		Wiki.showModal("Insert Image","<input type='file' id='imageUpload' accept='image/*'></input>",function() {
+			var selectedFile = document.getElementById('imageUpload').files[0];
+			var reader = new FileReader();
+			reader.onload = function(event) {
+				this.cmd("insertImage",event.target.result)
+			}.bind(this)
+			reader.readAsDataURL(selectedFile)
+		}.bind(this))
+		
+		
 	}
 	
 	convertToHTML() {
