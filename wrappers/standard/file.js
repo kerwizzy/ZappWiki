@@ -310,5 +310,12 @@ Wiki.file = {
 	,tree:async function() {
 		return await Wiki.sendRawAsync("TREE")
 	}
+	
+	,mkuser:async function(username,password) {
+		return await Wiki.sendArray(["MKUSER",username,password])
+	}
+	,rmuser:async function(username) {
+		return await Wiki.sendArray(["RMUSER",username])
+	}
 }
 
