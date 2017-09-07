@@ -37,12 +37,14 @@ const sjcl = require("sjcl")
 //var WikiSync = require("./sync.js")
 
 
-const port = 3080
+var serverconfig = JSON.parse(fs.readFileSync("serverconfig.json"))
+
+const port = serverconfig.port
 const url = require('url')  
 const util = require("util")
 
-var httpskey = fs.readFileSync('serverdata/https/key.pem');
-var httpscert = fs.readFileSync('serverdata/https/cert.pem')
+var httpskey = fs.readFileSync(serverconfig.key);
+var httpscert = fs.readFileSync(serverconfig.cert)
 if (fs.existsSync("serverdata/https/passphrase.txt")) {
 	var httpspassphrase = fs.readFileSync("serverdata/https/passphrase.txt","utf8");
 } else {
@@ -58,7 +60,7 @@ var httpsData = {
 	,cert:httpscert
 	,passphrase:httpspassphrase
 }
-
+var PUBLIC_URL = "/public"
 var server = https.createServer(httpsData,function(req,res){
 	// Set CORS headers
 	res.setHeader('Access-Control-Allow-Origin', '*');
@@ -73,6 +75,8 @@ var server = https.createServer(httpsData,function(req,res){
 	}
 	
 	
+	var parsed = url.parse(req.url) //parse query string
+		
 	cookies = new Cookies(req, res)
 	var authtoken = cookies.get("authtoken")
 	if (!checkAuth(authtoken)) {
@@ -125,6 +129,9 @@ var server = https.createServer(httpsData,function(req,res){
 				}
 				
 			})
+		} else if (req.url.substr(0,PUBLIC_URL.length) == PUBLIC_URL) {
+			var path = "./wiki"+parsed.pathname
+			stdResponse(res,path)
 		} else {
 			var loginPage =fs.readFileSync("login.html","utf8")
 			if (req.url == "/login_error") {
@@ -137,7 +144,7 @@ var server = https.createServer(httpsData,function(req,res){
 		
 	} else {
 		renewAuth(authtoken,authLifespan)
-		var parsed = url.parse(req.url) //parse query string
+		
 		if (req.method == "POST") {
 			res.setHeader('Content-Type', 'text/plain')
 			var body = [];
@@ -251,25 +258,30 @@ var server = https.createServer(httpsData,function(req,res){
 					console.log("Got source request for "+path)
 				}
 				
-				fs.readFile(path,function(err,data) {					
-					if (err) {
-						if (err.errno = -4058) {
-							res.statusCode = 404;
-							res.statusMessage = 'Not found'
-							res.end("<head><title>WikiServer: 404</title></head><body><h1>404 Not Found</h1></body>")
-						} else {
-							console.log(err)
-							res.end()
-						}
-					} else {
-						res.end(data)
-					}
-				})
+				stdResponse(res,path)
+				
 				
 			}		
 		}
 	}
 })
+
+function stdResponse(res,path) {
+	fs.readFile(path,function(err,data) {
+		if (err) {
+			if (err.errno = -4058) {
+				res.statusCode = 404;
+				res.statusMessage = 'Not found'
+				res.end("<head><title>WikiServer: 404</title></head><body><h1>404 Not Found</h1></body>")
+			} else {
+				console.log(err)
+				res.end()
+			}
+		} else {
+			res.end(data)
+		}
+	})
+}
 	
 	
 server.listen(port, function(err) {  
@@ -446,6 +458,7 @@ function userExists(username) {
 function makeUser(username,password) {
 	if (userExists(username)) {
 		console.log("ERROR: Username already exists.")
+		return "Username already exists."
 	} else {
 		var passwordHash = bcrypt.hashSync(password, saltLength);
 		var usernameHash = bcrypt.hashSync(username, saltLength);
@@ -458,6 +471,23 @@ function makeUser(username,password) {
 		users.push(user)
 		console.log("Making user "+username+":"+password)
 		saveUsers();
+		return "Created user."
+	}
+}
+
+function removeUser(username) {
+	var foundUser = false
+	for (var i = 0; i<users.length; i++) {
+		var user = users[i]
+		if (bcrypt.compareSync(username,user.u)) {
+			foundUser = true
+			users.splice(i,1)
+			saveUsers();
+			return "Deleted user '"+username+"'."			
+		}		
+	}
+	if (!foundUser) {
+		return "User '"+username+"' does not exist."
 	}
 }
 
@@ -611,6 +641,13 @@ async function respond(arr,authtoken) {
 				fs:"standard"
 				,file:"standard"
 			})
+		} else if (cmd == "MKUSER" && auth.l <= 0) {
+			var username = arr[1]
+			var password = arr[2]
+			return makeUser(username,password)
+		} else if (cmd == "RMUSER" && auth.l <= 0) {
+			var username = arr[1]
+			return removeUser(username)
 		}
 	} catch (err) {
 		if (verbose) {
