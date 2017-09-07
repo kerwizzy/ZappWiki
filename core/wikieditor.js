@@ -38,6 +38,22 @@ Wiki.editor = class {
 		return text;
 	}
 	
+	get height() {
+		return this.element.style.height
+	}
+	
+	set height(v) {
+		this.element.style.height = v		
+	}
+	
+	get width() {
+		return this.element.style.width
+	}
+	
+	set width(v) {
+		this.element.style.width = v		
+	}
+	
 	addButton(action,group,tooltip,classname,innerClass,shortcut) {
 		var boundAction = action.bind(this)
 		

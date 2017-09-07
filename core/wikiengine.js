@@ -818,11 +818,18 @@ var Wiki = {
 			Wiki.wysiwyg = false
 		} else {
 			document.getElementById("wysiwygToggle").innerHTML = "Markup"
+			
 			node.text = document.getElementById('textedit').value
 			var html = Wiki.parse(node.text.replace(/<p>\s*<\/p>/g,""))
+			
+			var height = document.getElementById("textedit").style.height			
+			
 			document.getElementById("texteditwrapper").innerHTML = ""
+			
 			Wiki.wysiwygEditor = new Wiki.editor(document.getElementById("texteditwrapper"),html)
 			Wiki.wysiwygEditor.addStandardButtons();
+			Wiki.wysiwygEditor.height = height
+			
 			Wiki.wysiwyg = true
 		}
 	}
