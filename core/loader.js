@@ -101,7 +101,7 @@ load:function() {
 	
 	
 		
-	Wiki.setup(); //Setup the page before running the postload script
+	Wiki.runRuleList(Wiki.setup.rules); //Setup the page before running the postload script
 	
 	/* TODO: do we want to allow referencing postload scripts? Obviously we don't need it for preload (that would just be an include) but what about postload?
 	var standardScript = await fs.readFileAsync("system/config/script.js")
