@@ -12,12 +12,6 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 		}
 		,name:"default_setwikicurrentpath"
 	}
-	,{ //Set title
-		rule:function() {
-			document.title = Wiki.title
-		}
-		,name:"default_title"
-	}
 	,{
 		rule:function() {
 			Wiki.file.getUserData(function(user) {
@@ -105,6 +99,7 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 					title = Wiki.currentPath
 				}
 			}
+			document.title = title
 			
 			document.getElementById('body').innerHTML = "<h1 class='pagetitle'>"+title+"</h1>"
 		}			
