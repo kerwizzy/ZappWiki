@@ -6,6 +6,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cookies": "^0.7.0",
+    "prompt": "^1.0.0",
     "sjcl": "^1.0.7"
   },
   "devDependencies": {},

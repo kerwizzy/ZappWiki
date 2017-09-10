@@ -1,3 +1,10 @@
+var setupServer = require("setupServer.js")
+if (!fs.existsSync("serverconfig.json")) {
+	setupServer(function() {
+		process.exit();
+	})	
+} else {
+
 var verbose = true;
 const rfs = require("fs")
 var fs = {
@@ -56,7 +63,6 @@ const querystring = require("querystring")
 const sjcl = require("sjcl")
 
 //var WikiSync = require("./sync.js")
-
 
 var serverconfig = JSON.parse(fs.readFileSync("serverconfig.json"))
 
@@ -935,4 +941,5 @@ function genFsTree(path,isLower,isSearch) {
 	}
 	
 	return tree
+}
 }
