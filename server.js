@@ -21,9 +21,25 @@ var fs = {
 
 const FS_WRAPPER = "wrappers/standard/fs.js"
 const FILE_WRAPPER = "wrappers/standard/file.js"
+var templatePath = "core/template.html"
+var SOURCES = `<script src='/src/core/client.js'></script>
+<script src='/src/core/loader.js'></script>
+<script src='/src/core/setup.js'></script>
+<script src='/src/core/parser.js'></script>
+<script src='/src/core/wysiwyg.js'></script>
 
 
 
+<script src='/src/wrappers/fs.js'></script>
+<script src='/src/wrappers/file.js'></script>
+
+
+<script src='/src/bootstrap/jquery-2.2.4.min.js'></script>
+<link rel="stylesheet" href="/src/bootstrap/bootstrap.min.css"></link>
+<script src='/src/bootstrap/bootstrap.min.js'></script>
+<link rel='stylesheet' href='/src/fonts/font-awesome-4.7.0/css/font-awesome.min.css'></link>
+<link rel="stylesheet" type="text/css" href="/src/treeview/_styles.css" media="screen">
+<link rel="stylesheet" type="text/css" href="/src/core/default.css">`
 
 const https = require("https")
 
@@ -217,8 +233,8 @@ var server = https.createServer(httpsData,function(req,res){
 						return
 					}
 				}
-				var templatePath = "core/template.html"
-				res.end(fs.readFileSync(templatePath,"utf8"))
+				
+				res.end(fs.readFileSync(templatePath,"utf8").replace("<!--SOURCES-->",SOURCES))
 			} else {
 				var corePath = "/src/core/"
 				var bootstrapPath = "/src/bootstrap/"
