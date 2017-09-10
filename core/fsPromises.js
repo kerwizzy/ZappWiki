@@ -1,4 +1,3 @@
-console.log("Promises loaded!")
 Wiki.fs = {
 	//Note that these all return Promises, so they can be used with await.
 	writeFileAsync(path,data,encoding) {
