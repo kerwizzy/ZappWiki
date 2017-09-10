@@ -38,8 +38,7 @@ var Wiki = {
 		if (typeof index != "undefined") {
 			ruleList.splice(index,0,rule)
 		}
-	}
-	
+	}	
 	,showPopdown(text) {
 		document.getElementById("popdown").innerHTML = text
 		document.getElementById("popdown").classList.remove("popdown-animation")
@@ -62,65 +61,13 @@ var Wiki = {
 		,"jpg"
 		,"bmp"
 		,"jpeg"
-	]
-	,sanitizeCode:function(code) {
-		code = code.replace(/</g,"&lt;")
-		code = code.replace(/>/g,"&gt;")
-		return code
-	}
+	]	
 	,includeScript(fileName) {
 		var script   = document.createElement("script");
 		script.type  = "text/javascript";
 		script.src   = fileName;
 		document.body.appendChild(script);
-	}
-	,formatTimestamp:function(timestamp) {
-		var date = new Date(timestamp)
-		var day = date.getDate();
-		var daySuffix = "th"
-		if (day == 1) {
-			daySuffix = "st"
-		} else if (day == 2) {
-			daySuffix = "nd"
-		} else if (day == 3) {
-			daySuffix = "rd"
-		}
-		
-		var monthNum = date.getMonth();
-		var monthNames = [
-			"January"
-			,"February"
-			,"March"
-			,"April"
-			,"May"
-			,"June"
-			,"July"
-			,"August"
-			,"September"
-			,"October"
-			,"November"
-			,"December"		
-		]
-		
-		var month = monthNames[monthNum]
-		
-		var year = date.getFullYear()
-		var hours = date.getHours()
-		
-		var amPm = "am"
-		if (hours > 11) {
-			amPm = "pm"
-		}
-		
-		hours = hours%12		
-		if (hours == 0) {
-			hours = 12
-		}
-		
-		var minute = (date.getMinutes()+100).toString().substr(1)
-		
-		return day+daySuffix+" "+month+" "+year+" at "+hours+":"+minute+amPm
-	}
+	}	
 	,parse:function(markup,filter,invert) {
 		if (!filter) {
 			filter = []
@@ -287,222 +234,17 @@ var Wiki = {
 		Wiki.loader.reload()
 	}
 	,editCurrent:function() {
-		Wiki.runRuleList(Wiki.editRules);
-	}
-	,editRules:[
-		{
-			name:"default_checklocked"
-			,rule:function() {
-				if (node.locked) {
-					var shouldEdit = confirm("File is locked. Are you sure you want to edit it?");
-					if (!shouldEdit) {
-						Wiki.cancelEdit();
-					}
-				}				
-			}			
-		}
-		,{
-			name:"default_checkpermissions"
-			,rule:function() {
-				if (Wiki.user.l >= 3) {
-					alert("You do not have permission to edit this file.")
-					Wiki.cancelEdit();					
-				}				
-			}			
-		}
-		,{
-			name:"default_addsaveshortcut"
-			,rule:function() {
-				window.addEventListener("keydown",function(event) {
-					if (event.key == "s" && event.ctrlKey) {
-						var wysiwyg = Wiki.wysiwyg
-						Wiki.saveNoReload();
-						event.preventDefault();
-						console.log("Saved page.")
-						if (Wiki.wysiwyg != wysiwyg) {
-							Wiki.toggleWYSIWYG();
-						}
-					}
-				})				
-			}			
-		}
-		,{
-			name:"default_edit_bodyinit"
-			,rule:function() {
-				Wiki.body = document.getElementById("body")
-			}			
-		}
-		,{
-			name:"default_edit_wikipage_setup_addheader"
-			,rule:function() {
-				if (node.type == "zappwiki") {
-					Wiki.body.innerHTML = 
-					"<h1 class='pagetitle'><input id='titleedit' class='headerInput' type='text' style='width:100%;height:80px;'></input></h1><BR><i><input id='subtitleedit' class='headerInput' style='width:100%'></input></i><BR><BR>"
-				}
-			}
-		}
-		,{
-			name:"default_edit_wikipage_setup_addwysiwygbutton"
-			,rule:function() {
-				if (node.type == "zappwiki") {
-					Wiki.body.innerHTML +="<BR><a onclick='Wiki.toggleWYSIWYG()' id='wysiwygToggle' style='cursor:pointer'>WYSIWYG</a>"
-				}
-			}
-		}		
-		,{
-			name:"default_edit_wikipage_setup_addbody"
-			,rule:function() {
-				if (node.type == "zappwiki") {
-					Wiki.body.innerHTML += 
-					"<hr><div id='texteditwrapper'><textarea id='textedit' style='width:100%'></textarea></div><BR><BR>"
-					+"<h2>Include</h2><textarea style='width:100%' id='includeedit'></textarea>"
-					+"<h2>Scripts</h2>"
-					+"<h3>Preload</h3><div class='isResizable' id='preloadeditWrapper'><textarea style='width:100%' id='preloadedit'></textarea></div>"
-					+"<h3>Postload</h3><div class='isResizable' id='postloadeditWrapper'><textarea style='width:100%' id='postloadedit'></textarea></div>"
-				}
-			}
-		}
-		,{
-			name:"default_edit_wikipage_setup"
-			,rule:function() {
-				if (node.type=="zappwiki") {
-					//The scripts and include stuff probably never happen because the same thing happens in the loader...
-					if (!node.postload) {
-						node.postload = ""
-					}
-					if (!node.include) {
-						node.include = ""
-					}
-					if (!node.preload) {
-						node.preload = ""
-					}
-					if (!node.subtitle) {
-						node.subtitle = ""
-					}
-					
-					document.getElementById("titleedit").value = node.title
-					document.getElementById("subtitleedit").value = node.subtitle
-					document.getElementById('textedit').value = node.text
-					Wiki.autoGrow(document.getElementById('textedit'))
-					
-					document.getElementById('postloadedit').value = node.postload
-					document.getElementById('includeedit').value = node.include
-					document.getElementById('preloadedit').value = node.preload
-					
-					//Wiki.autoGrow(document.getElementById('postloadedit'))
-					Wiki.autoGrow(document.getElementById('includeedit'))
-					//Wiki.autoGrow(document.getElementById('preloadedit'))
-					
-					if (CodeMirror) {
-						var config = {
-							lineNumbers:true
-                          	,indentWithTabs:true
-                          	,indentUnit:4
-							,mode:"javascript"
-						}
-						Wiki.codeMirrorPostloadEdit = CodeMirror.fromTextArea(document.getElementById('postloadedit'),config);
-						Wiki.codeMirrorPreloadEdit = CodeMirror.fromTextArea(document.getElementById('preloadedit'),config);
-						
-						//To this to stop the editors from continually expanding when the user resizes them.
-						document.getElementById('postloadeditWrapper').style.height = window.getComputedStyle(document.getElementById("postloadeditWrapper")).height
-						document.getElementById('preloadeditWrapper').style.height = window.getComputedStyle(document.getElementById("preloadeditWrapper")).height
-						
-						setInterval(Wiki.updateEditorSizes,200)
-					}
-				}				
-			}
-		}
-		,{
-			name:"default_edit_wikipage_setup_settings"
-			,rule:function() {
-				if (node.type=="zappwiki") {
-					if (typeof node.includePath == "undefined") {
-						node.includePath = "system/config/include.txt"						
-					}
-					
-					document.getElementById("includePathEdit").value = node.includePath
-					
-					if (!node.locked) {
-						node.locked = false;
-					}
-					
-					document.getElementById("lockFileBox").checked = node.locked
-				}				
-			}			
-		}
-		,{
-			name:"default_edit_imgpage"
-			,rule:function() {
-				if (Wiki.imageExtensions.indexOf(node.type) != -1) {
-					alert("Editing images is currently not supported.")
-					Wiki.editing = false
-					Wiki.updateEditClasses()
-				}
-			}
-		}
-		,{
-			name:"default_edit_codepage"
-			,rule:function() {
-				if (node.type != "zappwiki" && Wiki.imageExtensions.indexOf(node.type) == -1) {
-					Wiki.body.innerHTML = "<h1 class='pagetitle'>"+node.title+"</h1><div style='border:1px solid gray;'><textarea id='textedit' style='width:100%'></textarea></div>"
-					document.getElementById('textedit').value = node.text
-					Wiki.autoGrow(document.getElementById('textedit'))
-					if (CodeMirror) {
-						var modeMapper = {
-							"html":"text/html"
-							,"css":"css"
-							,"js":"javascript"				
-						}
-						
-						
-						var config = {
-							lineNumbers:true
-                          	,indentWithTabs:true
-                          	,indentUnit:4
-							,mode:modeMapper[node.type]
-						}
-						Wiki.codeMirrorTextEdit = CodeMirror.fromTextArea(document.getElementById('textedit'),config);
-						Wiki.codeMirrorTextEdit.setSize(null,"90vh")
-					}
-				}
-			}			
-		}
-		,{
-			name:"default_readprefs_defaulteditmode"
-			,rule:function() {
-				if (node.type == "zappwiki") {
-					var pref = Wiki.getPref("core-editor-defaulteditmode")
-					if (pref == "wysiwyg") {
-						Wiki.toggleWYSIWYG();
-					}
-				}
-			}			
-		}
-	]
-	,updateEditorSizes:function() {
-		if (Wiki.codeMirrorPreloadEdit) {
-			var w = window.getComputedStyle(document.getElementById("preloadeditWrapper")).width
-			var h = window.getComputedStyle(document.getElementById("preloadeditWrapper")).height
-			Wiki.codeMirrorPreloadEdit.setSize(w,h)
-			Wiki.codeMirrorPreloadEdit.refresh()
-		}
-		
-		if (Wiki.codeMirrorPostloadEdit) {
-			var w = window.getComputedStyle(document.getElementById("postloadeditWrapper")).width
-			var h = window.getComputedStyle(document.getElementById("postloadeditWrapper")).height
-			Wiki.codeMirrorPostloadEdit.setSize(w,h)
-			Wiki.codeMirrorPostloadEdit.refresh()
-		}		
-	}
+		Wiki.runRuleList(Wiki.edit.rules);
+	}	
 	,saveNoReload() {
 		if (Wiki.editing) {
-			Wiki.runRuleList(Wiki.saveRules);
+			Wiki.runRuleList(Wiki.save.rules);
 			Wiki.showPopdown("Saved page.")
 			Wiki.file.save(node)
 		}
 	}
 	,saveCurrent:function() {
-		Wiki.runRuleList(Wiki.saveRules);
+		Wiki.runRuleList(Wiki.save.rules);
 		
 		var newPath = document.getElementById("settingsFilePath").value
 		
@@ -565,89 +307,6 @@ var Wiki = {
 	,getPref(pref) {
 		return Wiki.getStorage("PREFERENCES",pref);
 	}
-	,preferences:[
-		{
-			name:"core-editor-defaulteditmode",
-			description:"Set this to 'wysiwyg' to make pages open in WYSIWYG mode by default. Set this to 'markup' or any other value to make pages open in markup mode by default."
-			,options:[
-				["wysiwyg","Use WYSIWYG editor by default."]
-				,["markup","User markup editor by default."]
-			]
-		}
-	]
-	,saveRules:[
-		{
-			name:"default_save_savecodemirror"
-			,rule:function() {
-				if (Wiki.codeMirrorTextEdit) {
-					Wiki.codeMirrorTextEdit.save()
-				} else if (Wiki.codeMirrorPostloadEdit) {
-					Wiki.codeMirrorPostloadEdit.save();
-					Wiki.codeMirrorPreloadEdit.save();
-				}								
-			}
-		}
-		,{
-			name:"default_save_wysiwyg"
-			,rule:function() {
-				if (Wiki.wysiwyg) {
-					node.text = "@@"+Wiki.wysiwygEditor.html+"@@"
-				}
-			}			
-		}
-		,{
-			name:"default_save_text"
-			,rule:function() {
-				if (!Wiki.wysiwyg) {
-					node.text = document.getElementById('textedit').value
-				}				
-			}
-		}
-		,{
-			name:"default_save_wikipage"
-			,rule:function() {
-				if (node.type == "zappwiki") {
-					node.title = document.getElementById("titleedit").value
-					node.subtitle = document.getElementById("subtitleedit").value
-					node.postload = document.getElementById('postloadedit').value
-					node.include = document.getElementById('includeedit').value
-					node.preload = document.getElementById('preloadedit').value
-					
-					if (!node.subtitle) {
-						delete node.subtitle
-					}
-					
-					if (!node.postload) {
-						delete node.postload
-					}
-					
-					if (!node.include) {
-						delete node.include
-					}
-					
-					if (!node.preload) {
-						delete node.preload
-					}
-				}
-			}
-		}
-		,{
-			name:"default_save_wikipage_settings"
-			,rule:function() {
-				if (node.type == "zappwiki") {
-					node.includePath = document.getElementById("includePathEdit").value
-					if (node.includePath == "system/config/include.txt") {
-						delete node.includePath
-					}
-					
-					node.locked = document.getElementById("lockFileBox").checked
-					if (!node.locked) {
-						node.locked = false;
-					}				
-				}	
-			}		
-		}
-	]
 	,newFile:function() {
 		if (Wiki.user.l >= 3) {
 			alert("You do not have permission to make new files.")
@@ -739,20 +398,7 @@ var Wiki = {
 		document.getElementById("expandSidebar").style.display = "none"
 	}
 	,serverURL:"/"
-	,getType:function(path) {
-		var split = path.split(".")
-		return split[split.length-1]
-	}
-	,getName:function(path) {
-		var split = path.split("/")
-		var name = split[split.length-1]
-		var extensionStart = name.lastIndexOf(".")
-		if (extensionStart == -1) {
-			return name
-		} else {
-			return name.substr(0,extensionStart)
-		}
-	}
+	
 	
 	/*
 	,send:function(obj,callbackFunction) {
@@ -818,121 +464,10 @@ var Wiki = {
 			base[key] = toAdd[key]
 		}		
 	}
-	,fs:{
-		//Note that these all return Promises, so they can be used with await.
-		writeFileAsync(path,data,encoding) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.writeFile(path,data,encoding,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})			
-		}
-		,readFileAsync(path,encoding) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.readFile(path,encoding,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-		,statAsync(path) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.stat(path,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-		,readdirAsync(path) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.readdir(path,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-		,renameAsync(oldpath,newpath) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.rename(oldpath,newpath,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-		,mkdirAsync(path) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.mkdir(path,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-		,rmdirAsync(path) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.rmdir(path,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-		,unlinkAsync(path) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.unlink(path,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-		,existsAsync(path) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.exists(path,function(res) {
-				resolve(res)
-			})})
-		}
-		,setPreloadAsync(data) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.setPreload(data,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-		,setPostloadAsync(data) {
-			return new Promise(function(resolve,reject) {
-			Wiki.fs.setPostload(data,function(err,res) {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(res)
-				}
-			})})
-		}
-	}
+	
 	,wait:function(time) {
 		var startTime = Date.now()
 		while (Date.now()-startTime < time) {};
 		return
 	}
 }
-
-
-

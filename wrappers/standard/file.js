@@ -249,8 +249,8 @@ Wiki.file = {
 	,move:async function(oldPath,newPath) {
 		var fs = Wiki.fs
 		
-		var oldType = Wiki.getType(oldPath)
-		var newType = Wiki.getType(newPath)
+		var oldType = Wiki.utils.getType(oldPath)
+		var newType = Wiki.utils.getType(newPath)
 		//TODO: have something check for overwrites
 		if (oldType != newType) {
 			if (newType == "zappwiki") { //old type must have been something else

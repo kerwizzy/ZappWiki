@@ -146,7 +146,7 @@ load:function() {
 	var timeout = 500
 	
 	var include = includeText.split("\n")
-	var parentPath = "/"+Wiki.loader.getParentPath(refpath)+"/"
+	var parentPath = "/"+Wiki.utils.getParentPath(refpath)+"/"
 	
 	var includeList = []
 	for (var i = 0; i<include.length; i++) {
@@ -244,26 +244,6 @@ load:function() {
 	var before = template.substr(0,fieldStart)
 	var after = template.substr(fieldEnd)
 	return before+value+after
-}
-
-,getType:function(path) {
-	var split = path.split(".")
-	return split[split.length-1]
-}
-
-,getName:function(path) {
-	var split = path.split("/")
-	var name = split[split.length-1]
-	var extensionStart = name.lastIndexOf(".")
-	if (extensionStart == -1) {
-		return name
-	} else {
-		return name.substr(0,extensionStart)
-	}
-}
-,getParentPath(path) {
-	var split = path.split("/")
-	return split.slice(0,split.length-1).join("/")	
 }
 ,systemerror:function(error,text,path) {
 	if (!path) {

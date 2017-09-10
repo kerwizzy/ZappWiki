@@ -42,7 +42,7 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 	,{
 		rule:function() {
 			if (node.timestamp) {
-				document.getElementById("dateSpan").innerHTML = Wiki.formatTimestamp(node.timestamp)
+				document.getElementById("dateSpan").innerHTML = Wiki.utils.formatTimestamp(node.timestamp)
 			}
 		}
 		,name:"default_date"
@@ -111,7 +111,7 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 				document.getElementById('body').innerHTML +="<i>"+(node.subtitle ? node.subtitle : "")+"</i>"
 			} 
 			document.getElementById('body').innerHTML += "<hr>"			
-		}			
+		}
 	}
 	,{
 		name:"default_setup_wikipage_body"

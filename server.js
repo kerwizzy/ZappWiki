@@ -27,6 +27,11 @@ var SOURCES = `<script src='/src/core/client.js'></script>
 <script src='/src/core/setup.js'></script>
 <script src='/src/core/parser.js'></script>
 <script src='/src/core/wysiwyg.js'></script>
+<script src='/src/core/edit.js'></script>
+<script src='/src/core/save.js'></script>
+<script src='/src/core/preferences.js'></script>
+<script src='/src/core/utils.js'></script>
+<script src='/src/core/fsPromises.js'></script>
 
 
 
