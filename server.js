@@ -1,10 +1,3 @@
-var setupServer = require("setupServer.js")
-if (!fs.existsSync("serverconfig.json")) {
-	setupServer(function() {
-		process.exit();
-	})	
-} else {
-
 var verbose = true;
 const rfs = require("fs")
 var fs = {
@@ -25,6 +18,15 @@ var fs = {
 		rfs.renameSync(path1,path2)
 	}	
 }
+
+//var setupServer = require("setupserver.js")
+if (!fs.existsSync("serverconfig.json")) {
+	setupServer(function() {
+		process.exit();
+	})	
+} else {
+
+
 
 const FS_WRAPPER = "wrappers/standard/fs.js"
 const FILE_WRAPPER = "wrappers/standard/file.js"
