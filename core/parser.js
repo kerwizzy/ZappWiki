@@ -40,10 +40,10 @@ Wiki.parser = {
 				}
 				
 				if (codeType == "") {
-					return "<pre>"+Wiki.sanitizeCode(markup)+"</pre>"
+					return "<pre>"+Wiki.utils.sanitizeCode(markup)+"</pre>"
 				} else {
 					Wiki.shouldHighlight = true
-					return "<pre style='background-color:inherit'><code class='"+codeType+"' style='overflow:scroll;white-space:unset;height:50vh;'>"+Wiki.sanitizeCode(markup.substr(firstLineEnd+1))+"</code></pre>"
+					return "<pre style='background-color:inherit'><code class='"+codeType+"' style='overflow:scroll;white-space:unset;height:50vh;'>"+Wiki.utils.sanitizeCode(markup.substr(firstLineEnd+1))+"</code></pre>"
 				}				
 			}
 			,closeParagraph:true
@@ -207,7 +207,7 @@ Wiki.parser = {
 		,{
 			start:"``"
 			,parse:function(markup) {
-				return "<code>"+Wiki.sanitizeCode(markup)+"</code>"
+				return "<code>"+Wiki.utils.sanitizeCode(markup)+"</code>"
 			}
 		}
 		,{
