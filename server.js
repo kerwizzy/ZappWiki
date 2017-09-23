@@ -56,6 +56,8 @@ var SOURCES = `<script src='/src/core/client.js'></script>
 <link rel="stylesheet" type="text/css" href="/src/core/default.css">`
 
 const https = require("https")
+const http = require("http")
+
 
 var bcrypt = require('bcryptjs');
 var Cookies = require("cookies")
@@ -68,7 +70,8 @@ const sjcl = require("sjcl")
 
 var serverconfig = JSON.parse(fs.readFileSync("serverconfig.json"))
 
-const port = serverconfig.port
+const httpsport = serverconfig.httpsport
+const httpport = serverconfig.httpport
 const url = require('url')  
 const util = require("util")
 
@@ -90,6 +93,23 @@ var httpsData = {
 	,passphrase:httpspassphrase
 }
 var PUBLIC_URL = "/public"
+
+
+var redirectServer = http.createServer(function(req,res) {
+	res.statusCode = 302
+	res.setHeader("Location","/home")
+	res.end();
+})
+
+	
+redirectServer.listen(httpport, function(err) {  
+	if (err) {
+	return console.log('something bad happened', err)
+	}
+
+	console.log("http redirect server is listening on port "+httpport+".")
+})
+
 var server = https.createServer(httpsData,function(req,res){
 	// Set CORS headers
 	res.setHeader('Access-Control-Allow-Origin', '*');
@@ -313,18 +333,15 @@ function stdResponse(res,path) {
 }
 	
 	
-server.listen(port, function(err) {  
-  if (err) {
-    return console.log('something bad happened', err)
-  }
+server.listen(httpsport, function(err) {  
+	if (err) {
+		return console.log('something bad happened', err)
+	}
 
-  console.log("server is listening on port "+port+".")
-/*
-require('dns').lookup(require('os').hostname(), function (err, add, fam) {
-console.log('Server IP: '+add);
+	console.log("server is listening on port "+httpsport+".")
 })
-*/
-})
+
+
 
 
 var os = require('os');

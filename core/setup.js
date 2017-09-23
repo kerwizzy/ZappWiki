@@ -136,7 +136,7 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 				if (node.type == "txt") {
 					document.getElementById('body').innerHTML += "<pre>"+Wiki.utils.sanitizeCode(node.text)+"</pre>"
 				} else {
-					document.getElementById('body').innerHTML += (node.type == "html" ? "<a href='/"+Wiki.currentPath+".html'>View HTML</a><BR><BR>" : "")+"<pre style='background-color:inherit'><code class='"+node.type+"' style='overflow:scroll;white-space:unset;height:50vh;'>"+Wiki.sanitizeCode(node.text)+"</code></pre>"
+					document.getElementById('body').innerHTML += (node.type == "html" ? "<a href='/"+Wiki.currentPath+".html'>View HTML</a><BR><BR>" : "")+"<pre style='background-color:inherit'><code class='"+node.type+"' style='overflow:scroll;white-space:unset;height:50vh;'>"+Wiki.utils.sanitizeCode(node.text)+"</code></pre>"
 					Wiki.setup.shouldHighlight = true
 				}
 			}				
