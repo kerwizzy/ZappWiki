@@ -97,7 +97,8 @@ var PUBLIC_URL = "/public"
 
 var redirectServer = http.createServer(function(req,res) {
 	res.statusCode = 302
-	res.setHeader("Location","/home")
+	var host = req.headers.host
+	res.setHeader("Location","https://"+host+"/home")
 	res.end();
 })
 
