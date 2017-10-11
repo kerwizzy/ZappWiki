@@ -158,6 +158,36 @@ Wiki.parser = {
 		}
 		*/
 		,{
+			start:/\n\|/
+			,end:/\n[^\|]/
+			,dontSkipEnd:true
+			,parse:function(markup,start,end) {
+				markup = "|"+markup
+				var rows = markup.split("\n")
+				var html = "<table class='table table-bordered'>"
+				for (var i = 0; i<rows.length; i++) {
+					var row = rows[i]
+					row = row.substr(1,row.length-2) //remove initial and final "|"'s
+					row = row.split("|")
+					var rowhtml = "<tr>"
+					for (var j = 0; j<row.length; j++) {
+						var cell = row[j]
+						var celltype = "td"
+						if (cell.substr(0,1) == "!") {
+							celltype = "th"
+							cell = cell.substr(1)
+						}
+						rowhtml += "<"+celltype+">"+Wiki.parse(cell,Wiki.singleLine,true)+"</"+celltype+">"
+					}
+					rowhtml += "</tr>"
+					html += rowhtml
+				}
+				html += "</table>"
+				return html
+			}
+			
+		}
+		,{
 			start:/\n[:;]/
 			,end:/\n[^:;\s]/
 			,dontSkipEnd:true
@@ -252,7 +282,6 @@ Wiki.parser = {
 				return lines.join("<BR>")
 			}
 		}
-		
 		,{
 			start:"[["
 			,end:"]]"
@@ -271,6 +300,30 @@ Wiki.parser = {
 					}
 				}
 			}
+		}
+		,{
+			start:/((https:\/\/)|(http:\/\/))[A-Za-z0-9_.~!*';:@&=+$,/?#[%-]+/g
+			/*
+			CAVEATS TO THIS PARSING SCHEME
+			
+			1. On purpose, does not support parens in the link. If someone wants
+			a paren, they will have to use the formal link syntax ([[link]]). 
+			If parens were allowed, this rule would not correctly parse
+			expressions like "... found a neat site (http://example.com) ..."
+			because it would be impossible to distinguish where the end of the link
+			was.
+			
+			2. Some of the characters in links this are used in other rules
+			(e.g. $$, etc), but that should not be a problem because the link will
+			get caught before it gets to any of the other characters.
+			
+			
+			*/
+			,end:/[\S\s]/
+			,parse:function(markup,start,end) {
+				return "<a href='"+start+"'>"+start+"</a>"
+			}
+			,dontSkipEnd:true
 		}
 		,{
 			start:"[img["
