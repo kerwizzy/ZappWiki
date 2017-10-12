@@ -38,6 +38,38 @@ Wiki.editor = class {
 		return text;
 	}
 	
+	get cursorIndex() {
+		var sel = window.getSelection()
+		var offset = sel.focusOffset
+		var str = sel.focusNode.nodeValue.substr(0,offset)
+		var done = false
+		var node = sel.focusNode
+		while (!done) {
+			if (node.nodeType == 1) {
+				offset += node.nodeName.length+2 //html tag is <TAG> (length of tag + two "<>")
+				str = "<"+node.nodeName+">"+str
+				//TODO: need to add length of attributes of the node too.
+			}
+			var prevSibling = node.previousSibling
+			if (prevSibling) {
+				node = prevSibling
+				if (node.nodeType == 1) {
+					offset += node.nodeName.length+3 //Add the length of the </TAG>
+					str = "</"+node.nodeName+">"+str
+					offset += node.innerHTML.length
+					str = node.innerHTML+str
+				}
+			} else {
+				node = node.parentNode
+			}
+			if (node.isSameNode(this.element)) {
+				done = true
+			}
+		}
+		//return offset
+		return str
+	}
+	
 	get height() {
 		return this.element.style.height
 	}
