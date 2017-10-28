@@ -113,11 +113,11 @@ Wiki.edit = {
 						Wiki.codeMirrorPostloadEdit = CodeMirror.fromTextArea(document.getElementById('postloadedit'),config);
 						Wiki.codeMirrorPreloadEdit = CodeMirror.fromTextArea(document.getElementById('preloadedit'),config);
 						
-						//To this to stop the editors from continually expanding when the user resizes them.
+						//To this to stop the editors from continually expanding until when the user resizes them.
 						document.getElementById('postloadeditWrapper').style.height = window.getComputedStyle(document.getElementById("postloadeditWrapper")).height
 						document.getElementById('preloadeditWrapper').style.height = window.getComputedStyle(document.getElementById("preloadeditWrapper")).height
 						
-						setInterval(Wiki.updateEditorSizes,200)
+						setInterval(Wiki.edit.updateEditorSizes,100)
 					}
 				}				
 			}
@@ -193,15 +193,23 @@ Wiki.edit = {
 		if (Wiki.codeMirrorPreloadEdit) {
 			var w = window.getComputedStyle(document.getElementById("preloadeditWrapper")).width
 			var h = window.getComputedStyle(document.getElementById("preloadeditWrapper")).height
-			Wiki.codeMirrorPreloadEdit.setSize(w,h)
-			Wiki.codeMirrorPreloadEdit.refresh()
+			if (w != Wiki.codeMirrorPreloadEditLastWidth || h != Wiki.codeMirrorPreloadEditLastHeight) {
+				Wiki.codeMirrorPreloadEdit.setSize(w,h)
+				Wiki.codeMirrorPreloadEdit.refresh()
+				Wiki.codeMirrorPreloadEditLastWidth = w
+				Wiki.codeMirrorPreloadEditLastHeight = h
+			}
 		}
 		
 		if (Wiki.codeMirrorPostloadEdit) {
 			var w = window.getComputedStyle(document.getElementById("postloadeditWrapper")).width
 			var h = window.getComputedStyle(document.getElementById("postloadeditWrapper")).height
-			Wiki.codeMirrorPostloadEdit.setSize(w,h)
-			Wiki.codeMirrorPostloadEdit.refresh()
+			if (w != Wiki.codeMirrorPostloadEditLastWidth || h != Wiki.codeMirrorPostloadEditLastHeight) {
+				Wiki.codeMirrorPostloadEdit.setSize(w,h)
+				Wiki.codeMirrorPostloadEdit.refresh()
+				Wiki.codeMirrorPostloadEditLastWidth = w
+				Wiki.codeMirrorPostloadEditLastHeight = h
+			}
 		}		
 	}
 }
