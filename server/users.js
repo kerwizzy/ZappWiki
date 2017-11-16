@@ -7,7 +7,7 @@ var users;
 initUsers();
 function initUsers() {
 	if (!fs.existsSync("serverdata/users.json")) {
-		users = {}
+		users = []
 	} else {	
 		users = JSON.parse(fs.readFileSync("serverdata/users.json","utf8"));
 	}
