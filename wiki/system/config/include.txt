@@ -1,0 +1,5 @@
+#PLUGINS_START
+#PLUGINS_END
+
+#THEME
+/system/theme/united_dark/theme.txt
