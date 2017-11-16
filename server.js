@@ -294,7 +294,7 @@ function stdResponse(res,path) {
 		}
 	})
 }
-
+var PUBLIC_URL = "/public"
 if (serverconfig.https) {
 
 
@@ -315,7 +315,7 @@ if (serverconfig.https) {
 		,cert:httpscert
 		,passphrase:httpspassphrase
 	}
-	var PUBLIC_URL = "/public"
+	
 
 
 	var redirectServer = http.createServer(function(req,res) {

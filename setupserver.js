@@ -54,7 +54,7 @@ function setup() {
 		serverdata.cert = res.cert
 		serverdata.key = res.key
 		serverdata.passphrase = res.passphrase
-		if (serverdata.httpsport == "n") {
+		if (res.httpsport == "n") {
 			serverdata.https = false
 		} else {
 			serverdata.https = true
