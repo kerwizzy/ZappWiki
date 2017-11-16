@@ -1,0 +1,69 @@
+{
+"title":"Preferences"
+,"text":[
+"<div id='prefs'>"
+,""
+,"</div>"
+,""
+]
+,"type":"zappwiki"
+,"timestamp":1503057980975
+,"preload":[
+"function formatPreferences() {
+"
+,"\tvar preferences = Wiki.preferences;"
+,"\tvar html = \"<table class='table table-bordered'><tr><th>Name</th><th style='width:35%'>Description</th><th>Value</th>\""
+,"\tfor (var i = 0; i<preferences.length; i++) {
+"
+,"\t\tvar pref = preferences[
+i
+]"
+,"\t\tvar val = Wiki.getPref(pref.name)"
+,"\t\tif (typeof val == \"undefined\") {
+"
+,"\t\t\tval = \"\""
+,"\t\t
+}"
+,"\t\tvar select = \"<select onchange='setPref(\\\"\"+pref.name+\"\\\"
+,this[
+this.selectedIndex
+].value)'>\""
+,"\t\tselect+=\"<option value='\"+val+\"'>\"+val+\"</option>\""
+,"\t\tfor (var j = 0; j<pref.options.length; j++) {
+"
+,"\t\t\tvar option = pref.options[
+j
+]"
+,"\t\t\tvar value = option[
+0
+]"
+,"\t\t\tvar description = option[
+1
+]"
+,"\t\t\tselect+=\"<option title='\"+description+\"' value='\"+value+\"'>\"+value+\"</option>\""
+,"\t\t
+}"
+,"\t\tselect+=\"</select>\""
+,"\t\thtml += \"<tr><td>\"+pref.name+\"</td><td>\"+pref.description+\"</td><td>\"+select+\"</td></tr>\""
+,"\t
+}"
+,"\thtml += \"</table>\""
+,"\treturn html"
+,"
+}"
+,""
+,"function setPref(key
+,val) {
+"
+,"Wiki.setPref(key
+,val)"
+,"Wiki.saveStorage();"
+,"
+}"
+]
+,"locked":false
+,"format":"ZWP v2"
+,"postload":[
+"document.getElementById(\"prefs\").innerHTML = formatPreferences();"
+]
+}

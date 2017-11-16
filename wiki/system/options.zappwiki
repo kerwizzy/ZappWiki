@@ -1,0 +1,188 @@
+{
+"title":"Options"
+,"text":[
+"!Themes"
+,""
+,"''Current theme:'' <span id='themeSpan'></span>"
+,""
+,"''Installed Themes:''"
+,"<div id='installedThemes'></div>"
+,""
+,"!Plugins"
+,""
+,"<div id='plugins'></div>"
+]
+,"type":"zappwiki"
+,"timestamp":1502974009403
+,"preload":[
+"var include"
+,"var themes"
+,"var plugins"
+,"var enabledPlugins = [
+
+]"
+,""
+,"Wiki.fs.readFile(\"system/config/include.txt\"
+,\"utf8\"
+,function(err
+,data) {
+"
+,"\tinclude = data.split(\"\\n\")"
+,"\t"
+,"\tvar pluginsStart = include.indexOf(\"#PLUGINS_START\")"
+,"\tvar pluginsEnd = include.indexOf(\"#PLUGINS_END\")"
+,"\tenabledPlugins = include.slice(pluginsStart+1
+,pluginsEnd)"
+,"\tfor (var i = 0; i<enabledPlugins.length; i++) {
+"
+,"\t\tenabledPlugins[
+i
+] = enabledPlugins[
+i
+].replace(\"/system/plugin/\"
+,\"\")"
+,"\t\tenabledPlugins[
+i
+] = enabledPlugins[
+i
+].replace(\"/plugin.txt\"
+,\"\")"
+,"\t
+}"
+,"
+})"
+,""
+,"Wiki.fs.readdir(\"system/theme\"
+,function(err
+,data) {
+"
+,"\tthemes = data"
+,"
+})"
+,""
+,"Wiki.fs.readdir(\"system/plugin\"
+,function(err
+,data) {
+"
+,"\tplugins = data"
+,"
+})"
+,""
+,"function getCurrentTheme() {
+"
+,"\tvar themeLine = include.indexOf(\"#THEME\");"
+,"\tvar errorText = \"Unable to detect current theme.\""
+,"\tif (themeLine == -1) {
+"
+,"\t\treturn errorText"
+,"\t
+}"
+,"\tvar themeText = include[
+themeLine+1
+]"
+,"\tif (!themeText) {
+"
+,"\t\treturn errorText\t"
+,"\t
+}"
+,"\tvar standardThemePath = \"/system/theme/\""
+,"\tif (themeText.substr(0
+,standardThemePath.length) != standardThemePath) {
+"
+,"\t\treturn errorText\t"
+,"\t
+}"
+,"\tvar theme = themeText.substr(standardThemePath.length).replace(\"/theme.txt\"
+,\"\")"
+,"\tif (theme == \"\") {
+"
+,"\t\treturn errorText"
+,"\t
+}"
+,"\treturn theme"
+,"
+}"
+,""
+,"function generateThemeList() {
+"
+,"\tvar list = \"<ul>\""
+,"\tfor (var i = 0; i<themes.length; i++) {
+"
+,"\t\tvar theme = themes[
+i
+]"
+,"\t\tlist += \"<li><a onclick='setTheme(\\\"\"+theme+\"\\\")'>\"+theme+\"</a></li>\""
+,"\t
+}"
+,"\tlist+=\"</ul>\""
+,"\treturn list;\t"
+,"
+}"
+,""
+,"function setTheme(theme) {
+"
+,"\tvar themeLine = include.indexOf(\"#THEME\");"
+,"\tif (themeLine == -1) {
+"
+,"\t\treturn;"
+,"\t
+}"
+,"\tinclude[
+themeLine+1
+] = \"/system/theme/\"+theme+\"/theme.txt\""
+,"\tWiki.fs.writeFile(\"system/config/include.txt\"
+,include.join(\"\\n\")
+,\"utf8\"
+,function() {
+"
+,"\t\tlocation.reload();\t"
+,"\t
+})"
+,"
+}"
+,""
+,"async function generatePluginList() {
+"
+,"\tvar out = \"<ul>\""
+,"\tfor (var i = 0; i<plugins.length; i++) {
+"
+,"\t\tvar plugin = plugins[
+i
+]"
+,"\t\tvar pluginDescription = Wiki.parse(await Wiki.fs.readFileAsync(\"/system/plugin/\"+plugin+\"/info.txt\"
+,\"utf8\")
+,Wiki.singleLine
+,true)"
+,"\t\tvar colon = pluginDescription != \"\" ? \":\" : \"\""
+,"\t\t"
+,"\t\tvar enabled = enabledPlugins.indexOf(plugin) != -1"
+,"\t\tif (enabled) {
+"
+,"\t\t\tout += \"<li><b>\"+plugin+colon+\"</b> \"+pluginDescription+\"</li>\""
+,"\t\t
+} else {
+"
+,"\t\t\tout += \"<li><s>\"+plugin+colon+\"</s> \"+pluginDescription+\"</li>\""
+,"\t\t
+}"
+,"\t
+}"
+,"\tout += \"</ul>\""
+,"\treturn out"
+,"
+}"
+,""
+,""
+]
+,"locked":false
+,"postload":[
+"document.getElementById(\"themeSpan\").innerHTML = getCurrentTheme();"
+,""
+,"document.getElementById(\"installedThemes\").innerHTML = generateThemeList();"
+,""
+,"generatePluginList().then(function(res) {
+document.getElementById(\"plugins\").innerHTML = res
+});"
+]
+,"format":"ZWP v2"
+}
