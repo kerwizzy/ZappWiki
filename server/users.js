@@ -6,7 +6,11 @@ const saltLength = 10;
 var users;
 initUsers();
 function initUsers() {
-	users = JSON.parse(fs.readFileSync("serverdata/users.json","utf8"));
+	if (!fs.existsSync("serverdata/users.json")) {
+		users = {}
+	} else {	
+		users = JSON.parse(fs.readFileSync("serverdata/users.json","utf8"));
+	}
 }
 
 
