@@ -7,6 +7,9 @@ var users;
 initUsers();
 function initUsers() {
 	if (!fs.existsSync("serverdata/users.json")) {
+		if (!fs.existsSync("serverdata")) {
+			fs.mkdirSync("serverdata")
+		}
 		users = []
 	} else {	
 		users = JSON.parse(fs.readFileSync("serverdata/users.json","utf8"));
