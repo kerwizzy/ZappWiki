@@ -50,8 +50,8 @@ Wiki.parser = {
 		}
 		,{
 			name:"list"
-			,start:/\n([\*#>]+)/ //used to start with \n \n
-			,end:/\n[^\*#>\s]/
+			,start:/\n([\*#>:]+)/ //used to start with \n \n
+			,end:/\n[^\*#>:\s]/
 			,parse:function(markup,start,end) {
 				var html = ""
 				
@@ -93,6 +93,8 @@ Wiki.parser = {
 									expectedToClose.push("ol")
 								} else if (indentStr[j] == ">") {
 									expectedToClose.push("blockquote")
+								} else if (indentStr[j] == ":") {
+									expectedToClose.push("dd")
 								}
 							}
 							
