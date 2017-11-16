@@ -295,6 +295,7 @@ function stdResponse(res,path) {
 	})
 }
 var PUBLIC_URL = "/public"
+var authLifespan = 120*60*1000 //120 min
 if (serverconfig.https) {
 
 
@@ -307,7 +308,7 @@ if (serverconfig.https) {
 	}
 
 
-	var authLifespan = 120*60*1000 //120 min
+	
 
 
 	var httpsData = {
