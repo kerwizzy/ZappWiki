@@ -61,7 +61,7 @@ checkCredentials(username,password) {//return undefined if credentials incorrect
 	if (!foundUser) {
 		makeUser(username,password)
 	}
-	saveUsers();
+	Users.saveUsers();
 }
 
 ,userExists(username) {
@@ -90,7 +90,7 @@ checkCredentials(username,password) {//return undefined if credentials incorrect
 		
 		users.push(user)
 		console.log("Making user "+username+":"+password)
-		saveUsers();
+		Users.saveUsers();
 		return "Created user."
 	}
 }
@@ -102,7 +102,7 @@ checkCredentials(username,password) {//return undefined if credentials incorrect
 		if (bcrypt.compareSync(username,user.u)) {
 			foundUser = true
 			users.splice(i,1)
-			saveUsers();
+			Users.saveUsers();
 			return "Deleted user '"+username+"'."			
 		}		
 	}
@@ -128,7 +128,7 @@ checkCredentials(username,password) {//return undefined if credentials incorrect
 	if (!foundUser) {
 		console.log("ERROR: User does not exist; cannot set user data.")
 	} else {
-		saveUsers();
+		Users.saveUsers();
 	}
 }
 
