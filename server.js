@@ -55,7 +55,11 @@ var SOURCES = `<script src='/src/core/client.js'></script>
 
 const https = require("https")
 const http = require("http")
-
+var serverconfig = JSON.parse(fs.readFileSync("serverconfig.json"))
+const httpsport = serverconfig.httpsport
+const httpport = serverconfig.httpport
+const url = require('url')  
+const util = require("util")
 
 
 var Cookies = require("cookies")
@@ -66,51 +70,10 @@ const sjcl = require("sjcl")
 
 //var WikiSync = require("./sync.js")
 var Users = require("./server/users.js")
-var serverconfig = JSON.parse(fs.readFileSync("serverconfig.json"))
 
 
-const httpsport = serverconfig.httpsport
-const httpport = serverconfig.httpport
-const url = require('url')  
-const util = require("util")
 
-var httpskey = fs.readFileSync(serverconfig.key);
-var httpscert = fs.readFileSync(serverconfig.cert)
-if (fs.existsSync("serverdata/https/passphrase.txt")) {
-	var httpspassphrase = fs.readFileSync("serverdata/https/passphrase.txt","utf8");
-} else {
-	var httpspassphrase = ""
-}
-
-
-var authLifespan = 120*60*1000 //120 min
-
-
-var httpsData = {
-	key:httpskey
-	,cert:httpscert
-	,passphrase:httpspassphrase
-}
-var PUBLIC_URL = "/public"
-
-
-var redirectServer = http.createServer(function(req,res) {
-	res.statusCode = 302
-	var host = req.headers.host
-	res.setHeader("Location","https://"+host+"/home")
-	res.end();
-})
-
-	
-redirectServer.listen(httpport, function(err) {  
-	if (err) {
-	return console.log('something bad happened', err)
-	}
-
-	console.log("http redirect server is listening on port "+httpport+".")
-})
-
-var server = https.createServer(httpsData,function(req,res){
+var serverRespond = function(req,res){
 	// Set CORS headers
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-req-Method', '*');
@@ -313,7 +276,7 @@ var server = https.createServer(httpsData,function(req,res){
 			}		
 		}
 	}
-})
+}
 
 function stdResponse(res,path) {
 	fs.readFile(path,function(err,data) {
@@ -331,16 +294,68 @@ function stdResponse(res,path) {
 		}
 	})
 }
-	
-	
-server.listen(httpsport, function(err) {  
-	if (err) {
-		return console.log('something bad happened', err)
+
+if (serverconfig.https) {
+
+
+	var httpskey = fs.readFileSync(serverconfig.key);
+	var httpscert = fs.readFileSync(serverconfig.cert)
+	if (fs.existsSync(serverconfig.passphrase)) {
+		var httpspassphrase = fs.readFileSync(serverconfig.passphrase,"utf8");
+	} else {
+		var httpspassphrase = ""
 	}
 
-	console.log("server is listening on port "+httpsport+".")
-})
 
+	var authLifespan = 120*60*1000 //120 min
+
+
+	var httpsData = {
+		key:httpskey
+		,cert:httpscert
+		,passphrase:httpspassphrase
+	}
+	var PUBLIC_URL = "/public"
+
+
+	var redirectServer = http.createServer(function(req,res) {
+		res.statusCode = 302
+		var host = req.headers.host
+		res.setHeader("Location","https://"+host+"/home")
+		res.end();
+	})
+
+		
+	redirectServer.listen(httpport, function(err) {  
+		if (err) {
+		return console.log('something bad happened', err)
+		}
+
+		console.log("http redirect server is listening on port "+httpport+".")
+	})
+
+	var server = https.createServer(httpsData,serverRespond)	
+		
+	server.listen(httpsport, function(err) {  
+		if (err) {
+			return console.log('something bad happened', err)
+		}
+
+		console.log("server is listening on port "+httpsport+".")
+	})
+
+
+} else {
+	var server = http.createServer(serverRespond)	
+		
+	server.listen(httpport, function(err) {  
+		if (err) {
+			return console.log('something bad happened', err)
+		}
+
+		console.log("server is listening on port "+httpport+".")
+	})
+}
 
 
 

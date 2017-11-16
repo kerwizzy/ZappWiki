@@ -1,4 +1,5 @@
 var prompt = require("prompt")
+const fs = require("fs")
 var Users = require("./server/users.js")
 var serverdata = {}
 var users = {}
@@ -15,19 +16,23 @@ function setup() {
 		properties: {
 			cert: {
 				description:"Path to HTTPS Certificate"
-				,required: true
+				,required: false
 			}
 			,key: {
 				description:"Path to HTTPS Key"
-				,required: true
+				,required: false
+			}
+			,passphrase: {
+				description:"Path to HTTPS Passphrase File"
+				,required: false
 			}
 			,httpsport: {
-				description:"Https port to listen on"
+				description:"Https port to listen on (use n to disable, not recommended)"
 				,required: true
 				,default:443
 			}
 			,httpport: {
-				description:"Http port to listen on (only used for redirecting to http)"
+				description:"Http port to listen on (used for redirecting to https or for http-only)"
 				,required: true
 				,default:80
 			}
@@ -48,7 +53,13 @@ function setup() {
 	prompt.get(SCHEMA,function(err,res) {
 		serverdata.cert = res.cert
 		serverdata.key = res.key
-		serverdata.httpsport = res.httpsport
+		serverdata.passphrase = res.passphrase
+		if (serverdata.httpsport == "n") {
+			serverdata.https = false
+		} else {
+			serverdata.https = true
+			serverdata.httpsport = res.httpsport
+		}
 		serverdata.httpport = res.httpport
 		fs.writeFileSync("serverconfig.json",JSON.stringify(serverdata))
 		
