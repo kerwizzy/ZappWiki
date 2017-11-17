@@ -81,7 +81,7 @@ Wiki.parser = {
 				for (var i = 0; i<lines.length; i++) {
 					var line = lines[i]
 					if (line.match(/\S/)) {
-						var lineTextStart = line.search(/[^\*#>\s]/)
+						var lineTextStart = line.search(/[^\*#>:\s]/)
 						if (lineTextStart != -1) {
 							var indentStr = line.substr(0,lineTextStart).replace(/\s/,"")
 							var lineText = line.substr(lineTextStart)

@@ -488,7 +488,7 @@ async function respond(arr,authtoken) {
 		if (cmd=="WRITE") {
 			console.log("Parent Path =" + getParentPath(path))
 		}
-		console.log("Auth = "+JSON.stringify(auth))
+		//console.log("Auth = "+JSON.stringify(auth))
 	}
 	//console.log(path)
 	try {
@@ -523,7 +523,7 @@ async function respond(arr,authtoken) {
 			]
 			return out.join(",")
 		} else if (cmd == "READDIR") {
-			return fs.readdirSync(path).join(",")
+			return fs.readdirSync(path).join("\n")
 		} else if (cmd == "MKDIR" && auth.l <= 2) {
 			fs.mkdirSync(path)
 		} else if (cmd == "RMDIR" && auth.l <= 2) {

@@ -64,7 +64,7 @@ Wiki.combineObjects(Wiki.fs,{ //Functions for a standard server with no addition
 	}
 	,readdir:function(path,callback) {
 		Wiki.sendArray(["READDIR",path],function(data) {
-			data = data.split(",")
+			data = data.split("\n")
 			callback(undefined,data)
 		})
 	}
