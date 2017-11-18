@@ -341,7 +341,9 @@ load:function() {
 			var type = Wiki.utils.getType(filepath)
 			if (type=="zappwiki") {
 				name = name.substr(0,name.length-type.length-1) //-1 is for "."
-			} else {
+			}
+			
+			if (type != "zappwiki" || Wiki.utils.getName(filepath).indexOf(".") != -1) {
 				filepath+=".zappwiki"
 			}
 			if (isCurrent) {
