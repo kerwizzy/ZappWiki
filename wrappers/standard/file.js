@@ -276,10 +276,8 @@ Wiki.file = {
 			location.assign("/home")
 		})
 	}
-	,getUserData:function(callback) {
-		Wiki.sendRaw("USERDATA",function(res) {
-			callback(JSON.parse(res))
-		})		
+	,getUserData:async function() {
+		return JSON.parse(await Wiki.sendRawAsync("USERDATA"))
 	}
 	,addRemote:function(name,path,callback) { //Note these synchronization commands require an auth level of 0 for adding remotes and 1 for syncing
 		Wiki.sendArray(["ADDREMOTE",name,path],function() {
