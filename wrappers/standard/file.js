@@ -55,7 +55,7 @@ Wiki.file = {
 				return Wiki.loader.systemerror("Unaccepted File Type","."+fileExtension.toLowerCase()+" files are not currently supported.")
 			} else {
 				if (fileExtension == "zappwiki") {
-					var data = (await fs.readFileAsync(wikiPath)).replace(/\n\t/g,"") 
+					var data = (await fs.readFileAsync(wikiPath)).replace(/[\n\t]/g,"") 
 					obj = JSON.parse(data)				
 				} else {
 					var imageExtensions = [
