@@ -8,7 +8,8 @@ class WikiSearch {
 			//Standard rule for adding options: setting the option to true makes the search more complicated/longer, etc.
 			searchSystem:false
 			,fullText:true
-			,allTypes:true
+			,allExtensions:true
+			,allFields:true
 		}
 		
 		this.options = WikiSearch.interleaveObjects(options,defaultOptions)
@@ -85,13 +86,14 @@ class WikiSearch {
 				if (type == "file") {
 					var path = node[2].substr(1) //Remove the inital slash
 					var extension = Wiki.utils.getType(name)
-					//TODO: test if extension part of this search
 					this.state = 2
 					this.fileType = type
 					this.filePath = path
 					this.fileName = name
-										
-					Wiki.fs.readFile(path,"utf8",this.continueSearch.bind(this))
+					this.fileExtension = extension
+					if (this.options.allExtensions || this.extensions.indexOf(extension) != -1) {
+						Wiki.fs.readFile(path,"utf8",this.continueSearch.bind(this))
+					}					
 				} else if (type == "directory") {
 					if (name != "system" && !this.options.searchSystem) {
 						this.idx.push(2) //2 is the actual start of the data inside a directory node. 0 is type, 1 is path	
@@ -109,20 +111,39 @@ class WikiSearch {
 					this.onend();
 				}
 			}
-		} else if (this.state == 2) {
+		} else if (this.state == 2) { //search loaded data
 			var type = this.fileType
 			var path = this.filePath
 			var name = this.fileName
-			var matches = data.toLowerCase().match(this.search.toLowerCase())
-			if (matches) {				
-				var result = {
-					path:path
-					,type:type
-					,name:name
-					,numMatches:matches.length
+			if (this.fileExtension == "zappwiki") {
+				var parsed = JSON.parse(data)
+				var keys = Object.keys(parsed)
+				for (var i = 0; i<keys.length; i++) {
+					var key = keys[i]
+					if (this.options.allFields || this.options.fields.indexOf(key) != -1) {
+						var matches = parsed[key].toLowerCase().match(this.search.toLowerCase())
+						if (matches) {	
+							var result = {
+								path:path
+								,extension:this.fileExtension
+								,name:name
+								,numMatches:matches.length
+							}
+						}
+					}
 				}
-				if (this.onresult) {
-					this.onresult(result)
+			} else {
+				var matches = data.toLowerCase().match(this.search.toLowerCase())
+				if (matches) {	
+					var result = {
+						path:path
+						,extension:this.fileExtension
+						,name:name
+						,numMatches:matches.length
+					}
+					if (this.onresult) {
+						this.onresult(result)
+					}
 				}
 			}
 			this.state = 1
