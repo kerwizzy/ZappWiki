@@ -8,9 +8,10 @@ Wiki.parser = {
 				return obj
 			}
 		} else if (obj instanceof RegExp) {
-			var matchLoc = afterIndex.search(obj)
+			var objCopy = Wiki.parser.copyRegExp(obj)
+			var matchLoc = afterIndex.search(objCopy)
 			if (matchLoc == 0) {
-				var match = obj.exec(afterIndex)
+				var match = objCopy.exec(afterIndex)
 				return match[0] //Match is an array
 			}
 		} else if (typeof obj == "function") {
@@ -18,7 +19,13 @@ Wiki.parser = {
 		}
 		//return undefined
 	}
-	
+	,copyRegExp(r) {
+		var s = r.toString()
+		var end = s.lastIndexOf("/")
+		var exp = s.substr(1,end-1)
+		var flags = s.substr(end+1)
+		return new RegExp(exp,flags)
+	}
 	,rules:[
 		{
 			start:/\n!+/
@@ -304,7 +311,8 @@ Wiki.parser = {
 			}
 		}
 		,{
-			start:/((https:\/\/)|(http:\/\/))[A-Za-z0-9_.~!*';:@&=+$,/?#[%-]+/g
+			name:"automaticlinkdetect"
+			,start:/((https:\/\/)|(http:\/\/))[A-Za-z0-9_.~!*';:@&=+$,/?#[%-]+/g
 			/*
 			CAVEATS TO THIS PARSING SCHEME
 			
