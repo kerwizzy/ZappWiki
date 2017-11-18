@@ -60,7 +60,7 @@ class WikiSearch {
 		this.continueSearch();
 	}
 	
-	continueSearch(err,data) {
+	continueSearch(data) {
 		/*
 		STATES
 		
@@ -86,13 +86,13 @@ class WikiSearch {
 				if (type == "file") {
 					var path = node[2].substr(1) //Remove the inital slash
 					var extension = Wiki.utils.getType(name)
-					this.state = 2
-					this.fileType = type
-					this.filePath = path
-					this.fileName = name
-					this.fileExtension = extension
-					if (this.options.allExtensions || this.extensions.indexOf(extension) != -1) {
-						Wiki.fs.readFile(path,"utf8",this.continueSearch.bind(this))
+					if (this.options.allExtensions || this.options.extensions.indexOf(extension) != -1) {
+						this.state = 2
+						this.fileType = type
+						this.filePath = path
+						this.fileName = name
+						this.fileExtension = extension
+						Wiki.file.read(path,false).then(this.continueSearch.bind(this))
 					}					
 				} else if (type == "directory") {
 					if (name != "system" && !this.options.searchSystem) {
@@ -115,13 +115,12 @@ class WikiSearch {
 			var type = this.fileType
 			var path = this.filePath
 			var name = this.fileName
-			if (this.fileExtension == "zappwiki") {
-				var parsed = JSON.parse(data)
-				var keys = Object.keys(parsed)
+			if (data.type == "zappwiki") {
+				var keys = Object.keys(data)
 				for (var i = 0; i<keys.length; i++) {
 					var key = keys[i]
 					if (this.options.allFields || this.options.fields.indexOf(key) != -1) {
-						var matches = parsed[key].toLowerCase().match(this.search.toLowerCase())
+						var matches = data[key].toString().toLowerCase().match(this.search.toLowerCase())
 						if (matches) {	
 							var result = {
 								path:path
@@ -132,8 +131,8 @@ class WikiSearch {
 						}
 					}
 				}
-			} else {
-				var matches = data.toLowerCase().match(this.search.toLowerCase())
+			} else if (data.type != "systemerror") {
+				var matches = data.text.toLowerCase().match(this.search.toLowerCase())
 				if (matches) {	
 					var result = {
 						path:path
@@ -141,10 +140,11 @@ class WikiSearch {
 						,name:name
 						,numMatches:matches.length
 					}
-					if (this.onresult) {
-						this.onresult(result)
-					}
+					
 				}
+			}
+			if (this.onresult && result) {
+				this.onresult(result)
 			}
 			this.state = 1
 			setTimeout(this.continueSearch.bind(this),0)
