@@ -14,7 +14,7 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 	}
 	,{
 		rule:function() {
-			Wiki.file.getUserData(function(user) {
+			Wiki.file.getUserData().then(function(user) {
 				Wiki.user = user
 				Wiki.storage = Wiki.user.storage
 				if (Wiki.user.l > 20 && !Wiki.loginAlert) {
@@ -26,11 +26,18 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 		,name:"default_wikiuserinit"
 	}
 	,{
+		name:"default_setsidebarusername"
+		,rule:function() {
+			Wiki.file.getUserData().then(function(user) {
+				document.getElementById("sidebarUsername").innerHTML = user.username
+			})
+		}		
+	}
+	,{
 		rule:function() {
 			setInterval(function() {
-				Wiki.file.getUserData(function(user) {
-					Wiki.user = user
-					if (Wiki.user.l > 20 && !Wiki.loginAlert) {
+				Wiki.file.getUserData().then(function(user) {
+					if (user.l > 20 && !Wiki.loginAlert) {
 						alert("Your session has expired. Reload the page to refresh the session.")
 						Wiki.loginAlert = true
 					}

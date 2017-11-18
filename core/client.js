@@ -1,5 +1,5 @@
 var Wiki = {
-	runRuleList:function(ruleList) {
+	runRuleList:function(ruleList) {	
 		for (var i = 0; i<ruleList.length; i++) {
 			var rule = ruleList[i]
 			if (!rule.disabled) {
