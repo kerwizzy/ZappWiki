@@ -338,6 +338,12 @@ load:function() {
 			var filepath = node[2]
 			var isCurrent = filepath == "/"+path.join("/")
 			filepath = filepath.replace(Wiki.loader.treeBasePath,Wiki.loader.serverPath)
+			var type = Wiki.utils.getType(filepath)
+			if (type=="zappwiki") {
+				name = name.substr(0,name.length-type.length-1) //-1 is for "."
+			} else {
+				filepath+=".zappwiki"
+			}
 			if (isCurrent) {
 				html+='<li class="file treeElement currentFile"><a href="'+filepath+'">'+name+'</a></li>'
 			} else {

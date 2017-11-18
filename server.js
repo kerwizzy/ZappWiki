@@ -102,7 +102,6 @@ var serverRespond = function(req,res){
 					res.end(JSON.stringify({l:100}));
 					//Note that this will only usually happen if the user logged out in another page: If the client keeps pinging the server to check if it is logged in, then it will continue to renew the login. What to do about this?
 				} else {
-				
 					body = Buffer.concat(body).toString();
 					// at this point, `body` has the entire request body stored in it as a string
 					
@@ -156,7 +155,6 @@ var serverRespond = function(req,res){
 		
 	} else {
 		renewAuth(authtoken,authLifespan)
-		
 		if (req.method == "POST") {
 			res.setHeader('Content-Type', 'text/plain')
 			var body = [];
@@ -229,7 +227,6 @@ var serverRespond = function(req,res){
 						return
 					}
 				}
-				
 				res.end(fs.readFileSync(templatePath,"utf8").replace("<!--SOURCES-->",SOURCES))
 			} else {
 				var corePath = "/src/core/"
@@ -390,12 +387,16 @@ var validAuthTokens = []
 function checkAuth(authtoken) {	
 	for (var i = 0; i<validAuthTokens.length; i++) {
 		var token = validAuthTokens[i]
-		if (token.expiration > Date.now()) {
-			if (token.key == authtoken) {
+		if (token.key == authtoken) {
+			if (token.expiration > Date.now()) {
 				return true
-			}			
-		}		
+			} else {
+				//console.log("Token invalid: Token expired.")
+				return false
+			}
+		}			
 	}
+	//console.log("Token invalid: Token '"+authtoken+"' does not exist.")
 	return false
 }
 
@@ -823,7 +824,6 @@ function genFsTree(path,isLower,isSearch) {
 						extension = name.substr(extensionStart+1)
 					}
 					
-					name = name.substr(0,extensionStart) //remove the extension
 				}
 				
 				

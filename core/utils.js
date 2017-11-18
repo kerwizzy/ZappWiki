@@ -1,7 +1,15 @@
 Wiki.utils = {
 	getType:function(path) {
-			var split = path.split(".")
-			return split[split.length-1]
+			var dirsplit = path.split("/")
+			var split = dirsplit[dirsplit.length-1].split(".")
+			if (split.length != 1) {
+				var extension = split[split.length-1]
+				var matched = extension.match(/[\w\d]+/)
+				if (matched && matched[0] == extension) {
+					return extension
+				}
+			}
+			return ""
 		}
 	,getName:function(path) {
 		var split = path.split("/")

@@ -11,7 +11,7 @@ Wiki.parser = {
 			var objCopy = Wiki.parser.copyRegExp(obj)
 			var matchLoc = afterIndex.search(objCopy)
 			if (matchLoc == 0) {
-				var match = objCopy.exec(afterIndex)
+				var match = afterIndex.match(objCopy)
 				return match[0] //Match is an array
 			}
 		} else if (typeof obj == "function") {

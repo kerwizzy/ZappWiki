@@ -51,14 +51,11 @@ Wiki.file = {
 			return Wiki.loader.systemerror("Not Found","The parent path of '"+wikiPath+"' was not found in this wiki.",wikiPath)
 		}
 		
-		
-		var pagename = wikiPath.substr(lastSlashIndex+1) //leave out the slash	
-		//remove the extension if there is one.
-		pagename = pagename.split(".")
-		if (pagename.length != 1) {
-			pagename.pop()
+		var pagenameExtension = Wiki.utils.getType(wikiPath)
+		if (pagenameExtension == "zappwiki") { //A .zappwiki extension simply means "load as a zappwiki page". We remove it to allow loading paths like theme.css.zappwiki correctly. (theme.css is supposed to be loaded as a raw file)
+			wikiPath = wikiPath.substr(0,wikiPath.length-pagenameExtension.length-1)
 		}
-		pagename = pagename.join(".")
+		var pagename = Wiki.utils.getName(wikiPath)
 		
 		var dir = await fs.readdirAsync(parentPath)
 		var done = false
@@ -73,8 +70,8 @@ Wiki.file = {
 					
 			
 			if (fileExtensionStart != -1) { //Ignore directories and files with no extension
-				var fileExtension = fullfilename.substr(fileExtensionStart+1)	
-				var filename = fullfilename.substr(0,fileExtensionStart)
+				var fileExtension = Wiki.utils.getType(fullfilename)
+				var filename = Wiki.utils.getName(fullfilename)
 				if (filename == pagename) {
 					if (!Wiki.loader.typeMapper[fileExtension.toLowerCase()]) {
 						return Wiki.loader.systemerror("Unaccepted File Type","."+fileExtension.toLowerCase()+" files are not currently supported.")
