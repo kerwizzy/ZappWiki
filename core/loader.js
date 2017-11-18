@@ -313,10 +313,6 @@ load:function() {
 		isOnPath = true
 		pathIndex = 0
 		path = path.split("/")
-		var currentname = path[path.length-1]
-		currentname = currentname.split(".")
-		currentname.pop()
-		path[path.length-1] = currentname
 		globalPath = ""
 	} else {
 		var foldername = tree.getNode(new Wiki.loader.TreeIndex([1]))
