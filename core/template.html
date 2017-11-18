@@ -41,6 +41,52 @@ background-color:#333;
 <button id='cancelButton_expandSidebar' onclick='Wiki.cancelEdit()' class='btn btn-default expandButton' style='display:none'><span class='fa fa-fw fa-remove'></span></button>
 </div>
 </div>
+
+<!--
+<div id='sidebar' class='col-md-4 sidebar' style='color:white'>
+	<div style='direction:ltr;margin-top:15px;'>
+		<div id='editMenu' class='editMenu'>
+		<button id='editbutton' onclick='Wiki.toggleEdit()' class='btn btn-primary btn-lg'><span id='editbuttonicon' class='fa fa-fw fa-pencil'></span></button>
+		<button id='cancelButton' onclick='Wiki.cancelEdit()' class='btn btn-primary btn-lg' style='display:none'><span class='fa fa-fw fa-remove'></span></button>
+		<button id='settingsButton' class='btn btn-primary btn-lg' style='display:none' data-toggle="modal" data-target="#settingsModal"><span class='fa fa-fw fa-cog'></span></button>
+		</div>
+		<div id='fileMenu' class='editMenu'>
+		<button onclick='Wiki.newFile()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-plus'></span></button>
+		<button onclick='Wiki.newJournalFile()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-calendar'></span></button>
+		</div>
+		<div id='fileMenu2' class='editMenu'>
+		<button onclick='Wiki.newDirectory()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-folder-open'></span></button>
+		<button onclick='Wiki.copyCurrent()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-copy'></span></button>
+		<button id='deleteButton' onclick='Wiki.deleteCurrent()' style='display:none' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-trash'></span></button>
+		</div>
+		<div id='collapseMenu' class='editMenu'>
+		<button onclick='Wiki.collapseSidebar()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-chevron-left'></span></button>
+		</div>
+		<div style='margin-top:50px;' id='treeDiv'>
+		
+		</div>
+	</div>
+</div>
+-->
+<div class='col-md-5 col-md-offset-3' id='bodyWrapper'>
+
+<div id='body'>
+</div>
+
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+<BR>
+
+
+
+</div>
 <div id='sidebarWrapper' class='col-md-4'>
 <div class="panel-group" id="sidebar" role="tablist">
 	<div class="panel panel-primary">
@@ -53,7 +99,9 @@ background-color:#333;
 		</div>
 		<div id="navigationPanel" class="panel-collapse collapse in" role="tabpanel">
 			<div class="list-group">
-				<div id='treeDiv'>
+				<span class='fa fa-fw fa-search'></span> <input id='searchInput' placeholder="Search..."></input>
+				
+				<div id='treeDiv' style='margin-top:10px'>
 		
 				</div>
 			</div>
@@ -103,6 +151,8 @@ background-color:#333;
 		<div id="accountPanel" class="panel-collapse collapse" role="tabpanel">
 			<div class="list-group">
 			<li class="list-group-item">Logged in as <span style='font-weight:bold' id='sidebarUsername'></span></li>
+			<a class='list-group-item' href="/system/preferences.zappwiki">Preferences</a>
+			<a class='list-group-item' href="/system/session.zappwiki">Session Details</a>
 			<button onclick="Wiki.file.logout()" class='list-group-item'><span class='fa fa-fw fa-sign-out'></span> Sign out</button>
 			</div>
 		</div>
@@ -118,61 +168,10 @@ background-color:#333;
 		<div id="detailsPanel" class="panel-collapse collapse" role="tabpanel">
 			<li class="list-group-item"><b>Type:</b> <span id='typeDiv'></span></li>
 			<li class="list-group-item"><b>Path:</b> <span id='pathDiv'></span></li>
-			<li class="list-group-item"><b>Modified:</b> <span id='dateSpan'></span></li>
+			<li class="list-group-item"><b>Last Modified:</b> <span id='dateSpan'></span></li>
 		</div>
 	</div>
 </div>
-</div>
-<!--
-<div id='sidebar' class='col-md-4 sidebar' style='color:white'>
-	<div style='direction:ltr;margin-top:15px;'>
-		<div id='editMenu' class='editMenu'>
-		<button id='editbutton' onclick='Wiki.toggleEdit()' class='btn btn-primary btn-lg'><span id='editbuttonicon' class='fa fa-fw fa-pencil'></span></button>
-		<button id='cancelButton' onclick='Wiki.cancelEdit()' class='btn btn-primary btn-lg' style='display:none'><span class='fa fa-fw fa-remove'></span></button>
-		<button id='settingsButton' class='btn btn-primary btn-lg' style='display:none' data-toggle="modal" data-target="#settingsModal"><span class='fa fa-fw fa-cog'></span></button>
-		</div>
-		<div id='fileMenu' class='editMenu'>
-		<button onclick='Wiki.newFile()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-plus'></span></button>
-		<button onclick='Wiki.newJournalFile()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-calendar'></span></button>
-		</div>
-		<div id='fileMenu2' class='editMenu'>
-		<button onclick='Wiki.newDirectory()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-folder-open'></span></button>
-		<button onclick='Wiki.copyCurrent()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-copy'></span></button>
-		<button id='deleteButton' onclick='Wiki.deleteCurrent()' style='display:none' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-trash'></span></button>
-		</div>
-		<div id='collapseMenu' class='editMenu'>
-		<button onclick='Wiki.collapseSidebar()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-chevron-left'></span></button>
-		</div>
-		<div style='margin-top:50px;' id='treeDiv'>
-		
-		</div>
-	</div>
-</div>
--->
-<div class='col-md-5' id='bodyWrapper'>
-
-<div id='body'>
-</div>
-
-<BR>
-<BR>
-<BR>
-<BR>
-<BR>
-<BR>
-<BR>
-<BR>
-<BR>
-<BR>
-
-
-
-</div>
-<div class='col-md-3' id='rightSidebar' style='color:white'>
-<div id='userInfo'>
-
-</div>
-
 </div>
 
 </div>

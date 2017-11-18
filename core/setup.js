@@ -47,6 +47,22 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 		,name:"default_setupuserupdatetimer"
 	}
 	,{
+		name:"default_setup_exportinit"
+		,rule:function() {
+			Wiki.exporters.initSidebar()	
+		}
+	}
+	,{
+		name:"default_setup_search_listenerinit"
+		,rule:function() {
+			document.getElementById("searchInput").onkeydown = function(event) {
+				if (event.key == "Enter") {
+					Wiki.navigationSearch(document.getElementById("searchInput").value,{})
+				}
+			}			
+		}
+	}
+	,{
 		rule:function() {
 			if (node.timestamp) {
 				document.getElementById("dateSpan").innerHTML = Wiki.utils.formatTimestamp(node.timestamp)
