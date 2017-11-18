@@ -6,26 +6,23 @@ Wiki.file = {
 		if (obj.type == "zappwiki") {
 			var nodeCopy = JSON.parse(JSON.stringify(obj))
 			
-			/*
+			
 			nodeCopy.text = nodeCopy.text.split("\n") //Save it this way so git diffs are useful
 			
 			
 			if (nodeCopy.preload) nodeCopy.preload = nodeCopy.preload.split("\n");
 			if (nodeCopy.postload) nodeCopy.postload = nodeCopy.postload.split("\n");
 			if (nodeCopy.include) nodeCopy.include = nodeCopy.include.split("\n");
-			*/
+			
 			delete nodeCopy.path //Dont save the path			
+			delete nodeCopy.timestamp
+			delete nodeCopy.type
+			nodeCopy.format = "ZWP v4"
 			
-			nodeCopy.format = "ZWP v3"
 			
-			var data = JSON.stringify(nodeCopy)
-			/*
-			data = data.replace(/\,/g,"\n,")
-			data = data.replace(/\{/g,"{\n")
-			data = data.replace(/\}/g,"\n}")
-			data = data.replace(/\[/g,"[\n")
-			data = data.replace(/\]/g,"\n]")
-			*/
+			
+			var data = JSON.stringify(nodeCopy,null,"\t")
+			
 			await fs.writeFileAsync(obj.path,data)
 		} else {
 			await fs.writeFileAsync(obj.path,obj.text)
@@ -58,7 +55,7 @@ Wiki.file = {
 				return Wiki.loader.systemerror("Unaccepted File Type","."+fileExtension.toLowerCase()+" files are not currently supported.")
 			} else {
 				if (fileExtension == "zappwiki") {
-					var data = (await fs.readFileAsync(wikiPath)).replace(/\n/g,"") 
+					var data = (await fs.readFileAsync(wikiPath)).replace(/\n\t/g,"") 
 					obj = JSON.parse(data)				
 				} else {
 					var imageExtensions = [
@@ -90,11 +87,15 @@ Wiki.file = {
 				
 				if (Array.isArray(obj.text)) {
 					obj.text = obj.text.join("\n")
-					console.warn("Got ZWP v2 page");
+					if (obj.format == "ZWP v4") {					
+						console.log("Got ZWP v4 page");
+					} else {
+						console.warn("Got ZWP v2 page")
+					}
 				} else if (!obj.format) {
 					console.warn("Got ZWP v1 page")
 				} else {
-					console.log("Got ZWP v3 page");
+					console.warn("Got ZWP v3 page");
 				}
 				
 				if (Array.isArray(obj.postload)) {
