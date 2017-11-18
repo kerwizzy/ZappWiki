@@ -87,8 +87,7 @@ var serverRespond = function(req,res){
 	}
 	
 	
-	var parsed = url.parse(req.url) //parse query string
-		
+	var parsed = url.parse(req.url,true) //parse query string
 	cookies = new Cookies(req, res)
 	var authtoken = cookies.get("authtoken")
 	if (!checkAuth(authtoken)) {
@@ -218,7 +217,12 @@ var serverRespond = function(req,res){
 			var path = "./wiki"+parsed.pathname
 			
 			path = path.replace(/%20/g," ")
-			if (extension == "" || extension == "zappwiki") {
+			if (extension == "") {
+				res.statusCode = 302
+				res.setHeader("Location",parsed.pathname+".zappwiki")
+				res.end();
+				return;
+			} else if(extension == "zappwiki" || parsed.query.view == "wiki") {
 				if (fs.existsSync(path)) {
 					if (fs.statSync(path).isDirectory()) {
 						res.statusCode = 302

@@ -51,94 +51,67 @@ Wiki.file = {
 			return Wiki.loader.systemerror("Not Found","The parent path of '"+wikiPath+"' was not found in this wiki.",wikiPath)
 		}
 		
-		var pagenameExtension = Wiki.utils.getType(wikiPath)
-		if (pagenameExtension == "zappwiki") { //A .zappwiki extension simply means "load as a zappwiki page". We remove it to allow loading paths like theme.css.zappwiki correctly. (theme.css is supposed to be loaded as a raw file)
-			wikiPath = wikiPath.substr(0,wikiPath.length-pagenameExtension.length-1)
-		}
 		var pagename = Wiki.utils.getName(wikiPath)
-		
-		var dir = await fs.readdirAsync(parentPath)
-		var done = false
-		for (var i = 0; i<dir.length; i++) {
-			if (done) {
-				break;
-			}
-			
-			var fullfilename = dir[i]
-			
-			var fileExtensionStart = fullfilename.lastIndexOf(".")
+		var fileExtension = Wiki.utils.getType(wikiPath)
+		if (await fs.existsAsync(wikiPath)) {
+			if (!Wiki.loader.typeMapper[fileExtension.toLowerCase()]) {
+				return Wiki.loader.systemerror("Unaccepted File Type","."+fileExtension.toLowerCase()+" files are not currently supported.")
+			} else {
+				if (fileExtension == "zappwiki") {
+					var data = (await fs.readFileAsync(wikiPath)).replace(/\n/g,"") 
+					obj = JSON.parse(data)				
+				} else {
+					var imageExtensions = [
+						"png"
+						,"jpg"
+						,"bmp"
+						,"jpeg"						
+					]
 					
-			
-			if (fileExtensionStart != -1) { //Ignore directories and files with no extension
-				var fileExtension = Wiki.utils.getType(fullfilename)
-				var filename = Wiki.utils.getName(fullfilename)
-				if (filename == pagename) {
-					if (!Wiki.loader.typeMapper[fileExtension.toLowerCase()]) {
-						return Wiki.loader.systemerror("Unaccepted File Type","."+fileExtension.toLowerCase()+" files are not currently supported.")
-					} else {
-						if (fileExtension == "zappwiki") {
-							var data = (await fs.readFileAsync(parentPath+fullfilename)).replace(/\n/g,"") 
-							obj = JSON.parse(data)				
-							done = true
-						} else {
-							var imageExtensions = [
-								"png"
-								,"jpg"
-								,"bmp"
-								,"jpeg"						
-							]
-							
-							if (imageExtensions.indexOf(fileExtension.toLowerCase()) != -1) {
-								obj.text = (wikiPath.substr(0,lastSlashIndex+1)+fullfilename)
-							} else {							
-								obj.text = (await fs.readFileAsync(parentPath+fullfilename,"utf8"))
-							}
-							
-							obj.title = filename+"."+fileExtension
-							
-							done = true
-						}
-						
-						obj.path = parentPath+fullfilename
-						obj.type = fileExtension
-						if (getTimestamp) {
-							obj.timestamp = (await fs.statAsync(parentPath+fullfilename)).mtime.getTime()
-						}
-						
-						if (obj.script) {
-							obj.postload = obj.script
-							delete obj.script
-						}
-						
-						if (Array.isArray(obj.text)) {
-							obj.text = obj.text.join("\n")
-							console.warn("Got ZWP v2 page");
-						} else if (!obj.format) {
-							console.warn("Got ZWP v1 page")
-						} else {
-							console.log("Got ZWP v3 page");
-						}
-						
-						if (Array.isArray(obj.postload)) {
-							obj.postload = obj.postload.join("\n")
-						}
-						
-						if (Array.isArray(obj.preload)) {
-							obj.preload = obj.preload.join("\n")
-						}
-						
-						if (Array.isArray(obj.include)) {
-							obj.include = obj.include.join("\n")
-						}
+					if (imageExtensions.indexOf(fileExtension.toLowerCase()) != -1) {
+						obj.text = wikiPath
+					} else {							
+						obj.text = (await fs.readFileAsync(wikiPath,"utf8"))
 					}
+					
+					obj.title = pagename+"."+fileExtension
 				}
-			}
-		}
-		
-		if (!done) {
-			return Wiki.loader.systemerror("Not Found","The file '"+wikiPath+"' was not found in this wiki.",wikiPath)
+				
+				obj.path = wikiPath
+				obj.type = fileExtension
+				if (getTimestamp) {
+					obj.timestamp = (await fs.statAsync(wikiPath)).mtime.getTime()
+				}
+				
+				if (obj.script) {
+					obj.postload = obj.script
+					delete obj.script
+				}
+				
+				if (Array.isArray(obj.text)) {
+					obj.text = obj.text.join("\n")
+					console.warn("Got ZWP v2 page");
+				} else if (!obj.format) {
+					console.warn("Got ZWP v1 page")
+				} else {
+					console.log("Got ZWP v3 page");
+				}
+				
+				if (Array.isArray(obj.postload)) {
+					obj.postload = obj.postload.join("\n")
+				}
+				
+				if (Array.isArray(obj.preload)) {
+					obj.preload = obj.preload.join("\n")
+				}
+				
+				if (Array.isArray(obj.include)) {
+					obj.include = obj.include.join("\n")
+				}
+				return obj
+			}			
 		} else {
-			return obj
+			return Wiki.loader.systemerror("Not Found","The file '"+wikiPath+"' was not found in this wiki.",wikiPath)
 		}
 	}	
 	,newPage:async function(path) {
@@ -252,7 +225,7 @@ Wiki.file = {
 		if (oldType != newType) {
 			if (newType == "zappwiki") { //old type must have been something else
 				var oldData = await fs.readFileAsync(oldPath,"utf8")
-				var oldName = Wiki.getName(oldPath)
+				var oldName = Wiki.utils.getName(oldPath)
 				var newPage = {
 					type:"zappwiki"
 					,title:oldName

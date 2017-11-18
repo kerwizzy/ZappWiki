@@ -343,8 +343,8 @@ load:function() {
 				name = name.substr(0,name.length-type.length-1) //-1 is for "."
 			}
 			
-			if (type != "zappwiki" || Wiki.utils.getName(filepath).indexOf(".") != -1) {
-				filepath+=".zappwiki"
+			if (type != "zappwiki") {
+				filepath += "?view=wiki"
 			}
 			if (isCurrent) {
 				html+='<li class="file treeElement currentFile"><a href="'+filepath+'">'+name+'</a></li>'
