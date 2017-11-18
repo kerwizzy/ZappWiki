@@ -212,37 +212,10 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 	}
 }
 ,setFileFontStyleByTheme:function() {
+	var color = "#313131"
+	var hoverColor = "#171717"
 	
-	if (!Wiki.setup.pageColorSet) {
-		var innerBackgroundColor = window.getComputedStyle( document.body ,null).getPropertyValue('background-color');
-		
-		var innerBackgroundColorSplit = innerBackgroundColor.split(/[,\(\)]/);
-		var r = parseFloat(innerBackgroundColorSplit[1])
-		var g = parseFloat(innerBackgroundColorSplit[2])
-		var b = parseFloat(innerBackgroundColorSplit[3])
-		
-		var darkPage;
-		
-		if (((r+g+b)/3) < 110) {
-			darkPage = true
-		} else {
-			darkPage = false
-		}
-		
-		var color
-		var hoverColor
-		if (darkPage) {
-			color = "white"
-			hoverColor = "#ddd"				
-		} else {
-			color = "#555"
-			hoverColor = "#222"
-			
-		}
-		
-		
-		
-		document.getElementById("mainStyle").innerHTML += `
+	document.getElementById("mainStyle").innerHTML += `
 		label>a {
 			color:${color};	
 		}
@@ -271,6 +244,5 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 			color:${color};
 		}`
 		
-	}		
-}
+}		
 }

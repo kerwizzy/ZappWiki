@@ -219,18 +219,20 @@ var Wiki = {
 	,updateEditClasses:function() {
 		if (Wiki.editing) {
 			document.getElementById("editbuttonicon").className = "fa fa-fw fa-check"
+			document.getElementById("editbuttontext").innerHTML = "Confirm edit"
 			document.getElementById("editbuttonicon_expand").className = "fa fa-fw fa-check"
 			document.getElementById("cancelButton").style.display = ""
 			document.getElementById("cancelButton_expandSidebar").style.display = ""
 			document.getElementById("settingsButton").style.display = ""
-			document.getElementById("deleteButton").style.display = ""
+			//document.getElementById("deleteButton").style.display = ""
 		} else {
 			document.getElementById("editbuttonicon").className = "fa fa-fw fa-pencil"
+			document.getElementById("editbuttontext").innerHTML = "Start editing"
 			document.getElementById("editbuttonicon_expand").className = "fa fa-fw fa-pencil"
 			document.getElementById("cancelButton").style.display = "none"
 			document.getElementById("cancelButton_expandSidebar").style.display = "none"
 			document.getElementById("settingsButton").style.display = "none"
-			document.getElementById("deleteButton").style.display = "none"
+			//document.getElementById("deleteButton").style.display = "none"
 		}
 	}
 	,cancelEdit:function(){

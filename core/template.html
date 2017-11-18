@@ -41,10 +41,92 @@ background-color:#333;
 <button id='cancelButton_expandSidebar' onclick='Wiki.cancelEdit()' class='btn btn-default expandButton' style='display:none'><span class='fa fa-fw fa-remove'></span></button>
 </div>
 </div>
-
+<div id='sidebarWrapper' class='col-md-4'>
+<div class="panel-group" id="sidebar" role="tablist">
+	<div class="panel panel-primary">
+		<div class="panel-heading" role="tab">
+			<h4 class="panel-title">
+				<a role="button" data-toggle="collapse" data-parent="#sidebar" href="#navigationPanel">
+					<span class='fa fa-fw fa-navicon'></span> Navigation
+				</a>
+			</h4>
+		</div>
+		<div id="navigationPanel" class="panel-collapse collapse in" role="tabpanel">
+			<div class="list-group">
+				<div id='treeDiv'>
+		
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-primary">
+		<div class="panel-heading" role="tab">
+			<h4 class="panel-title">
+				<a class="collapsed" role="button" data-toggle="collapse" data-parent="#sidebar" href="#editMenu">
+					<span class='fa fa-fw fa-pencil'></span> Edit
+				</a>
+			</h4>
+		</div>
+		<div id="editMenu" class="panel-collapse collapse" role="tabpanel">
+			<button id='editbutton' onclick='Wiki.toggleEdit()' class='list-group-item'><span id='editbuttonicon' class='fa fa-fw fa-pencil'></span> <span id='editbuttontext'>Start editing</span></button>
+			<button id='cancelButton' onclick='Wiki.cancelEdit()' class='list-group-item' style='display:none'><span class='fa fa-fw fa-remove'></span> Discard changes</button>
+			<button id='settingsButton' class='list-group-item' style='display:none' data-toggle="modal" data-target="#settingsModal"><span class='fa fa-fw fa-cog'></span> Other options</button>
+			
+		</div>
+	</div>
+	<div class="panel panel-primary">
+		<div class="panel-heading" role="tab">
+		<h4 class="panel-title">
+			<a class="collapsed" role="button" data-toggle="collapse" data-parent="#sidebar" href="#filePanel">
+				<span id='editbuttonicon' class='fa fa-fw fa-file-o'></span> File
+			</a>
+		</h4>
+		</div>
+		<div id="filePanel" class="panel-collapse collapse" role="tabpanel">
+			<div class="list-group">
+			<button onclick='Wiki.newFile()' class='list-group-item'><span class='fa fa-fw fa-plus'></span> New Page</button>
+			<button onclick='Wiki.newJournalFile()' class='list-group-item'><span class='fa fa-fw fa-calendar'></span> New Journal Page</button>
+			<button onclick='Wiki.newDirectory()' class='list-group-item'><span class='fa fa-fw fa-folder-open'></span> New Folder</button>
+			<button onclick='Wiki.copyCurrent()' class='list-group-item'><span class='fa fa-fw fa-copy'></span> Copy Page</button>
+			<button id='deleteButton' onclick='Wiki.deleteCurrent()' class='list-group-item'><span class='fa fa-fw fa-trash'></span> Delete</button>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-primary">
+		<div class="panel-heading" role="tab">
+		<h4 class="panel-title">
+			<a class="collapsed" role="button" data-toggle="collapse" data-parent="#sidebar" href="#accountPanel">
+				<span class='fa fa-fw fa-key'></span> Account
+			</a>
+		</h4>
+		</div>
+		<div id="accountPanel" class="panel-collapse collapse" role="tabpanel">
+			<div class="list-group">
+			<li class="list-group-item">Logged in as <span style='font-weight:bold' id='sidebarUsername'></span></li>
+			<button onclick="Wiki.file.logout()" class='list-group-item'><span class='fa fa-fw fa-sign-out'></span> Sign out</button>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-primary">
+		<div class="panel-heading" role="tab">
+		<h4 class="panel-title">
+			<a class="collapsed" role="button" data-toggle="collapse" data-parent="#sidebar" href="#detailsPanel">
+				<span class='fa fa-fw fa-question-circle-o'></span> Page Details
+			</a>
+		</h4>
+		</div>
+		<div id="detailsPanel" class="panel-collapse collapse" role="tabpanel">
+			<li class="list-group-item"><b>Type:</b> <span id='typeDiv'></span></li>
+			<li class="list-group-item"><b>Path:</b> <span id='pathDiv'></span></li>
+			<li class="list-group-item"><b>Modified:</b> <span id='dateSpan'></span></li>
+		</div>
+	</div>
+</div>
+</div>
+<!--
 <div id='sidebar' class='col-md-4 sidebar' style='color:white'>
 	<div style='direction:ltr;margin-top:15px;'>
-		<div id='editMenu' class='editMenu'> <!--This would have been EDITMENUSTYLE-->
+		<div id='editMenu' class='editMenu'>
 		<button id='editbutton' onclick='Wiki.toggleEdit()' class='btn btn-primary btn-lg'><span id='editbuttonicon' class='fa fa-fw fa-pencil'></span></button>
 		<button id='cancelButton' onclick='Wiki.cancelEdit()' class='btn btn-primary btn-lg' style='display:none'><span class='fa fa-fw fa-remove'></span></button>
 		<button id='settingsButton' class='btn btn-primary btn-lg' style='display:none' data-toggle="modal" data-target="#settingsModal"><span class='fa fa-fw fa-cog'></span></button>
@@ -62,17 +144,13 @@ background-color:#333;
 		<button onclick='Wiki.collapseSidebar()' class='btn btn-primary btn-lg'><span class='fa fa-fw fa-chevron-left'></span></button>
 		</div>
 		<div style='margin-top:50px;' id='treeDiv'>
-		<!--FSTREE-->
+		
 		</div>
 	</div>
 </div>
+-->
 <div class='col-md-5' id='bodyWrapper'>
-<div class='text-muted'>
-<div style='float:right' id='typeDiv'><!--TYPE--></div>
-<div style='float:left' id='pathDiv'></div>
-<div style='display:table;margin-left:auto;margin-right:auto;' id='dateSpan'></div>
-</div>
-<hr>
+
 <div id='body'>
 </div>
 
@@ -92,8 +170,7 @@ background-color:#333;
 </div>
 <div class='col-md-3' id='rightSidebar' style='color:white'>
 <div id='userInfo'>
-Logged in as <span id='sidebarUsername'></span><BR>
-<a onclick="Wiki.file.logout()" style="cursor:pointer;color:white;">Sign out</a>
+
 </div>
 
 </div>
