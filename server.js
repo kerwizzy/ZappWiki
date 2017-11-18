@@ -56,6 +56,9 @@ var SOURCES = `<script src='/src/core/client.js'></script>
 const https = require("https")
 const http = require("http")
 var serverconfig = JSON.parse(fs.readFileSync("serverconfig.json"))
+if (!serverconfig.loginButtonColor) serverconfig.loginButtonColor = "#009cff"
+if (!serverconfig.loginButtonColorHover) serverconfig.loginButtonColorHover = "#0082ff"
+
 const httpsport = serverconfig.httpsport
 const httpport = serverconfig.httpport
 const url = require('url')  
@@ -144,6 +147,8 @@ var serverRespond = function(req,res){
 			stdResponse(res,path)
 		} else {
 			var loginPage =fs.readFileSync("login.html","utf8")
+			loginPage = loginPage.replace("/*BUTTON COLOR*/","background-color:"+serverconfig.loginButtonColor+";")
+			loginPage = loginPage.replace("/*BUTTON COLOR HOVER*/","background-color:"+serverconfig.loginButtonColorHover+";")
 			if (req.url == "/login_error") {
 				loginPage = loginPage.replace("<!--ERROR-->","<span class='error'>Incorrect Username or Password</span><BR><BR>")
 			} else {
