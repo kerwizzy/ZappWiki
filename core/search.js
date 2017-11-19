@@ -22,7 +22,7 @@ Wiki.search = {
 					var html = ["<i>Found "+results.length+" results.</i>"]
 					for (var i = 0; i<results.length; i++) {
 						var res = results[i]
-						html.push("<a href='"+res.path+"'>"+res.name+"</a>")					
+						html.push("<a href='/"+res.path+"'>"+res.name+"</a>")					
 					}
 					Wiki.search.navigationSearch.element.innerHTML = html.join("<BR>")
 				})
