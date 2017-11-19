@@ -220,16 +220,26 @@ var serverRespond = function(req,res){
 			if (fsExtensionStart == -1) {
 				extension = ""
 			}
-			
+			parsed.pathname = parsed.pathname.replace(/\/+/g,"/")
+			parsed.pathname = parsed.pathname.replace(/\/$/g,"")
 			var path = "./wiki"+parsed.pathname
 			
 			path = path.replace(/%20/g," ")
-			if (extension == "") {
+			if (fs.existsSync(path) && fs.statSync(path).isDirectory()) {
+				res.statusCode = 302
+				if (parsed.pathname == "/") {
+					res.setHeader("Location","/home.zappwiki")
+				} else {
+					res.setHeader("Location",parsed.pathname+"/index.zappwiki")
+				}
+				res.end();
+				return;
+			} else if (extension == "") {
 				res.statusCode = 302
 				res.setHeader("Location",parsed.pathname+".zappwiki")
 				res.end();
 				return;
-			} else if(extension == "zappwiki" || parsed.query.view == "wiki") {
+			} else if (extension == "zappwiki" || parsed.query.view == "wiki") {
 				if (fs.existsSync(path)) {
 					if (fs.statSync(path).isDirectory()) {
 						res.statusCode = 302
