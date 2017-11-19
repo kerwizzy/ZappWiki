@@ -106,15 +106,6 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 		,disabled:false		
 	}
 	,{
-		name:"default_setSmallScreensClasses"
-		,rule:function() {
-			if (window.innerWidth < 1500) {
-				document.getElementById("bodyWrapper").className = "col-md-8"
-				document.getElementById("sidebar").className = "col-md-3 sidebar"
-			}
-		}			
-	}
-	,{
 		name:"default_setpagetitle"
 		,rule:function() {
 			var title = node.title

@@ -33,7 +33,9 @@ Wiki.search = {
 		}
 		,stop:function(input) {
 			document.getElementById("treeDiv").style.display = ""
-			Wiki.search.navigationSearch.element.style.display = "none"
+			if (Wiki.search.navigationSearch.element) {
+				Wiki.search.navigationSearch.element.style.display = "none"
+			}
 			Wiki.search.navigationSearch.running = false
 			if (Wiki.search.navigationSearch.search) {
 				Wiki.search.navigationSearch.search.stop();
