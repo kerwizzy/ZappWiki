@@ -1,4 +1,4 @@
-Wiki.combineObjects(Wiki.fs,{ //Functions for a standard server with no additional authentication, signatures, etc.
+Wiki.utils.combineObjects(Wiki.fs,{ //Functions for a standard server with no additional authentication, signatures, etc.
 	writeFile:function(path,data,encoding,callback) { 
 		if (!encoding) {
 			encoding = "utf8"
