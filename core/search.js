@@ -10,16 +10,16 @@ Wiki.search = {
 				Wiki.search.navigationSearch.element.style.display = ""
 				document.getElementById("treeDiv").style.display = "none"
 				var search = new Wiki.search.clientSearch(input,{})
-				
+				Wiki.search.navigationSearch.element.innerHTML = '<span class="fa fa-spinner fa-pulse fa-fw"></span><i>Searching... found <span id="numSearchResults"></span> results.</i>'
 				search.on("result",function(res) {
 					Wiki.search.navigationSearch.results.push(res)
-					Wiki.search.navigationSearch.element.innerHTML = '<span class="fa fa-spinner fa-pulse fa-fw"></span><i>Searching... found '+Wiki.search.navigationSearch.results.length+' results.</i>'
+					document.getElementById("numSearchResults").innerHTML = Wiki.search.navigationSearch.results.length //Do it this way to stop the spinner from re
 				})
 				search.on("end",function() {
 					Wiki.search.navigationSearch.running = false
 					var results = Wiki.search.navigationSearch.results
 					results.sort(function(a,b) {return b.numMatches-a.numMatches})
-					var html = ["<i>Found "+results.length+"</i> results."]
+					var html = ["<i>Found "+results.length+" results.</i>"]
 					for (var i = 0; i<results.length; i++) {
 						var res = results[i]
 						html.push("<a href='"+res.path+"'>"+res.name+"</a>")					
