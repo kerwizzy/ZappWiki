@@ -461,15 +461,7 @@ var Wiki = {
 	,stringifyArray:function(arr) { //Converts the array to a string seperated by new lines. Note that this only allows sending commands where the server knows the number of arguments.
 		var out = arr.slice(0)	
 		return out.join("\n")
-	}
-	,combineObjects(base,toAdd) {
-		var keys = Object.keys(toAdd)
-		for (var i = 0; i<keys.length; i++) {
-			var key = keys[i]
-			base[key] = toAdd[key]
-		}		
-	}
-	
+	}	
 	,wait:function(time) {
 		var startTime = Date.now()
 		while (Date.now()-startTime < time) {};

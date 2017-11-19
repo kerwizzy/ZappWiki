@@ -55,11 +55,14 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 	,{
 		name:"default_setup_search_listenerinit"
 		,rule:function() {
-			document.getElementById("searchInput").onkeydown = function(event) {
-				if (event.key == "Enter") {
-					Wiki.navigationSearch(document.getElementById("searchInput").value,{})
+			setInterval(function() {
+				var val = document.getElementById("searchInput").value
+				if (val != "") {
+					Wiki.search.navigationSearch.start(val,{})
+				} else {
+					Wiki.search.navigationSearch.stop()
 				}
-			}			
+			},250)			
 		}
 	}
 	,{

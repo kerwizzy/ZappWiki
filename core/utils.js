@@ -77,4 +77,12 @@ Wiki.utils = {
 		code = code.replace(/>/g,"&gt;")
 		return code
 	}
+	,combineObjects(base,toAdd) {
+		var keys = Object.keys(toAdd)
+		for (var i = 0; i<keys.length; i++) {
+			var key = keys[i]
+			base[key] = toAdd[key]
+		}
+		return base
+	}
 }

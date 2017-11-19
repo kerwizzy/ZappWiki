@@ -39,7 +39,9 @@ var SOURCES = `<script src='/src/core/client.js'></script>
 <script src='/src/core/preferences.js'></script>
 <script src='/src/core/utils.js'></script>
 <script src='/src/core/fsPromises.js'></script>
-
+<script src='/src/core/ui.js'></script>
+<script src='/src/core/export.js'></script>
+<script src='/src/core/search.js'></script>
 
 
 <script src='/src/wrappers/fs.js'></script>
