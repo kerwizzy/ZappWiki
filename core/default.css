@@ -4,6 +4,11 @@
 
 }
 
+.wikieditor-body{
+padding: 12px;
+overflow: auto;
+}
+
 .wikieditor-wrapper{
 border-radius:5px;
 border: 1px solid gray;
@@ -89,15 +94,15 @@ max-height:100vh;
 /* POPDOWN STYLES */
 
 @keyframes popdownAction {
-	0% {right:-200px;}
-    20%  {right:0px;}
-	80%  {right:0px;}
-    100% {right:-200px;}	
+	0% {left:-200px;}
+    20%  {left:0px;}
+	80%  {left:0px;}
+    100% {left:-200px;}	
 }
 
 .popdown-animation {
 	top:0;
-	right:-200px;	
+	left:-200px;	
 	animation-name:popdownAction;
 	animation-duration:4s;	
 }
@@ -107,12 +112,12 @@ max-height:100vh;
 	color:black;
 	border:1px solid gray;
 	border-radius:2px;
-	box-shadow:5px 5px 2px black;
+	box-shadow:5px 5px 2px rgba(0,0,0,0.7);
 	background-color:white;
 	height:30px;
 	position:fixed;
 	padding:5px 10px;
 	margin:5px 10px;
 	top:0;
-	right:-200px;
+	left:-200px;
 }

@@ -210,6 +210,7 @@ var Wiki = {
 			document.getElementById("texteditwrapper").innerHTML = ""
 			
 			Wiki.wysiwygEditor = new Wiki.editor(document.getElementById("texteditwrapper"),html)
+			Wiki.wysiwygEditor.enableResize()
 			Wiki.wysiwygEditor.addStandardButtons();
 			Wiki.wysiwygEditor.height = height
 			

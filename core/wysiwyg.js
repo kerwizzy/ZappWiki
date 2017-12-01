@@ -19,9 +19,7 @@ Wiki.editor = class {
 	}
 	
 	enableResize() {
-		this.element.style.overflow = "hidden"
-		this.element.resize = "both"
-		this.element.border = "1px solid gray"
+		this.element.style.resize = "vertical"
 	}
 	
 	get html() {
