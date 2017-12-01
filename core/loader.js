@@ -342,10 +342,11 @@ load:function() {
 			if (type != "zappwiki") {
 				filepath += "?view=wiki"
 			}
+			var linkPath = filepath.replace(/'/g,"\\'")
 			if (isCurrent) {
-				html+='<li class="file treeElement currentFile"><a href="'+filepath+'">'+name+'</a></li>'
+				html+='<li class="file treeElement currentFile"><a onclick="Wiki.openPage(\''+linkPath+'\')">'+name+'</a></li>'
 			} else {
-				html+='<li class="file treeElement"><a href="'+filepath+'">'+name+'</a></li>'
+				html+='<li class="file treeElement"><a onclick="Wiki.openPage(\''+linkPath+'\')">'+name+'</a></li>'
 			}
 		} else {
 			var subtree = new Wiki.loader.AST(node)

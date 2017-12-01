@@ -439,6 +439,13 @@ var Wiki = {
 		};
 		xhttp.send(data);		
 	}
+	,openPage(link) {
+		if (Wiki.editing) {
+			window.open(link, '_blank');
+		} else {
+			location.assign(link);
+		}
+	}
 	,sendRawAsync:function(data) { //Returns a promise
 		return new Promise(function(resolve,reject) {
 			var serverURL = Wiki.serverURL

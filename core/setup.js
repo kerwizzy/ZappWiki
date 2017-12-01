@@ -14,6 +14,16 @@ rules:[ //These rules get executed in a top-down order: lower rules override hig
 	}
 	,{
 		rule:function() {
+			window.addEventListener("beforeunload", function (event) {
+				if (Wiki.editing) {
+					event.preventDefault();
+				}
+			});
+		}
+		,name:"default_setbeforeunloadlistener"
+	}
+	,{
+		rule:function() {
 			Wiki.file.getUserData().then(function(user) {
 				Wiki.user = user
 				Wiki.storage = Wiki.user.storage
