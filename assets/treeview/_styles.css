@@ -12,6 +12,7 @@ li.treeElement
 	position: relative; 
 	margin-left: -15px;
 	list-style: none;
+	cursor:pointer;
 }
 
 li.treeElement, li.treeElement>label {
