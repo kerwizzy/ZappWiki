@@ -339,8 +339,8 @@ if (serverconfig.https) {
 
 	var redirectServer = http.createServer(function(req,res) {
 		res.statusCode = 302
-		var host = req.headers.host
-		res.setHeader("Location","https://"+host+"/home")
+		var host = url.parse(req.url).hostname
+		res.setHeader("Location","https://"+host+":"+httpsport+"/home")
 		res.end();
 	})
 
