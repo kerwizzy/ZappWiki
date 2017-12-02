@@ -35,6 +35,18 @@ margin-top:10px;
 
 /*PAGE STYLES*/
 
+h4 a {
+	outline:0 !important;
+	text-decoration:none;
+	
+}
+
+
+h4 a:hover,h4 a:active,h4 a:focus{
+	text-decoration:none;
+}
+
+
 .pagetitle {
 font-size:50px;
 font-weight:bold;
